@@ -140,12 +140,26 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             raise
 
+        ids = set()
         if date in dates:
-            try:
-                with Database.connection.cursor() as cursor:
-                    #delete everythig except the actual day
-                    sql = 'DELETE FROM `artikel` WHERE datum!=%s'
-                    cursor.execute(sql, date)
-            except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
+            for d in dates:
+                if d != date:
+                    try:
+                        with Database.connection.cursor() as cursor:
+                            sql = "Select id from artikel where datum=%s"
+                            cursor.execute(sql,date)
+                            for row in cursor:
+                                ids.add(row.get('id'))
+                    except:
+                        print("Unexpected error:", sys.exc_info()[0])
+                        raise
+
+            for id in ids:
+                try:
+                    with Database.connection.cursor() as cursor:
+                        #delete everythig except the actual day
+                        sql = 'DELETE FROM `artikel` WHERE id=%s'
+                        cursor.execute(sql, date)
+                except:
+                    print("Unexpected error:", sys.exc_info()[0])
+                    raise

@@ -98,7 +98,7 @@ class XMLImporter:
 
         article_vector = {}
         for input in hm_tags:
-            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 1000)
+            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 10)
             for title in tmp_vector:
                 if title in article_vector:
                     # in the moment only addition of the scores, maybe also try averaging of the scores
