@@ -69,15 +69,17 @@ class XMLImporter:
 
             if artikel_id not in processed_pdf and len(artikel_titel)>10:
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
-                new_article = Artikel(artikel_id, artikel_text,
+                #ignore articles without noun/adjective content
+                if len(tags) > 2:
+                    new_article = Artikel(artikel_id, artikel_text,
                                       tags,
                                       artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
                                       artikel_seite_start, artikel_abbildung, artikel_rubrik,
                                       artikel_ressort, artikel_titel, XMLImporter.getvector(tags,2), XMLImporter.getvector(tags,1), XMLImporter.getvector(tags,0))
-                XMLImporter.database.storearticle(new_article)
-                print("stored: "+new_article.titel)
-                results.append(new_article)
-                processed_pdf.add(artikel_id)
+                    XMLImporter.database.storearticle(new_article)
+                    print("stored: "+new_article.titel)
+                    results.append(new_article)
+                    processed_pdf.add(artikel_id)
 
         return results
 
@@ -98,7 +100,7 @@ class XMLImporter:
 
         article_vector = {}
         for input in hm_tags:
-            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 10)
+            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 50)
             for title in tmp_vector:
                 if title in article_vector:
                     # in the moment only addition of the scores, maybe also try averaging of the scores
