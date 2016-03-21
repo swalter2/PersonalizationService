@@ -3,6 +3,7 @@ import os
 import zipfile
 import datetime
 from database import Database
+from learning import Learning
 from xmlimporter import XMLImporter
 
 
@@ -19,7 +20,6 @@ database = Database(host, user, password, db)
 today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
 
-
 url = "http://ftp.forschungsdatenmanagement.org/nw/8586833-Kogni-"+datum+".zip"
 filename = wget.download(url)
 print(filename)
@@ -27,12 +27,21 @@ importer = XMLImporter(database)
 with zipfile.ZipFile(filename, 'r') as z:
     z.extractall(filename.replace('.zip',''))
 print('extracted file')
+
 file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
 if os.path.isfile(file_to_import):
     print(file_to_import)
     importer.read_xml_file(file_to_import)
 print('imported everything to DB')
 
+print('start global learning')
+learning = Learning(host, user, password, db, datum)
+learning.global_learn()
+print('done global learning')
+
 database.checkanddeletearticleexceptdate(datum)
+print('cleaned database from old articles')
+
 os.remove(filename)
 os.rmdir(filename.replace('.zip',''))
+print('done with all')
