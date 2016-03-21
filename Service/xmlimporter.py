@@ -9,10 +9,12 @@ from general import *
 class XMLImporter:
     _lemmatizer = ''
     database = ''
+    text_hm = set()
 
     def __init__(self, database):
         XMLImporter._lemmatizer = PatternParserLemmatizer()
         XMLImporter.database = database
+        XMLImporter.text_hm = set()
 
     @staticmethod
     def read_xml_file(file):
@@ -67,7 +69,9 @@ class XMLImporter:
                             if quelle.tag == "seite-start":
                                 artikel_seite_start = str(quelle.text)
 
-            if artikel_id not in processed_pdf and len(artikel_titel)>10:
+            if artikel_id not in processed_pdf and len(artikel_titel)>10 and 'FAMILIENCRONIC' not in artikel_titel \
+                    and 'SO GEHT’S WEITER' not in artikel_titel and 'TERMINKALENDER' not in artikel_titel\
+                    and 'TERMIN-KALENDER' not in artikel_titel and artikel_text not in XMLImporter.text_hm:
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
                 #ignore articles without noun/adjective content
                 if len(tags) > 2:
@@ -77,6 +81,7 @@ class XMLImporter:
                                       artikel_seite_start, artikel_abbildung, artikel_rubrik,
                                       artikel_ressort, artikel_titel, XMLImporter.getvector(tags,2), XMLImporter.getvector(tags,1), XMLImporter.getvector(tags,0))
                     XMLImporter.database.storearticle(new_article)
+                    XMLImporter.text_hm.add(artikel_text)
                     print("stored: "+new_article.titel)
                     results.append(new_article)
                     processed_pdf.add(artikel_id)
