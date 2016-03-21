@@ -69,7 +69,7 @@ class XMLImporter:
                             if quelle.tag == "seite-start":
                                 artikel_seite_start = str(quelle.text)
 
-            if artikel_id not in processed_pdf and len(artikel_titel)>10 and 'FAMILIENCRONIC' not in artikel_titel \
+            if artikel_id not in processed_pdf and len(artikel_titel)>10 and 'Familienchronik' not in artikel_titel \
                     and 'SO GEHT’S WEITER' not in artikel_titel and 'WOHIN HEUTE' not in artikel_titel and 'TERMINKALENDER' not in artikel_titel\
                     and 'TERMIN-KALENDER' not in artikel_titel and artikel_text not in XMLImporter.text_hm:
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
