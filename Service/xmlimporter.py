@@ -77,12 +77,14 @@ class XMLImporter:
                     and 'WOHIN HEUTE' not in artikel_titel \
                     and 'TERMINKALENDER' not in artikel_titel\
                     and 'TERMIN-KALENDER' not in artikel_titel \
-                    and 'Öffnungszeiten' not in artikel_titel \
+                    and 'Öffnungszeiten' not in artikel_titel\
+                    and 'TERMIN- KALENDER' not in artikel_titel\
                     and artikel_text not in XMLImporter.text_hm:
 
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
+                tags = tags.strip()
                 #ignore articles without noun/adjective content
-                if len(tags) > 2:
+                if len(tags) > 2 and " " in tags:
                     new_article = Artikel(artikel_id, artikel_text,
                                       tags,
                                       artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,

@@ -129,6 +129,20 @@ class Database:
             raise
         return articleids
 
+    @staticmethod
+    def getarticleidswithoutdate():
+        articleids = []
+        query = 'Select distinct id from artikel where 1s;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(query)
+                for row in cursor:
+                    articleids.append(row.get('id'))
+        except :
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return articleids
+
 
     @staticmethod
     def adduserarticlescore(userid,articleid,score):
@@ -248,6 +262,82 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             raise
         return results
+
+    @staticmethod
+    def deleteuserinterestvector():
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'DELETE FROM nutzer_vector_alle WHERE 1;'
+                cursor.execute(sql)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'DELETE FROM nutzer_vector_personen WHERE 1;'
+                cursor.execute(sql)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'DELETE FROM nutzer_vector_ohne_personen WHERE 1;'
+                cursor.execute(sql)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+
+    @staticmethod
+    def adduserinterestvector(personid, vector, mode):
+        sql = ''
+        if mode == 0:
+            sql = "INSERT INTO nutzer_vector_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
+        if mode == 1:
+            sql = "INSERT INTO nutzer_vector_ohne_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
+        if mode == 2:
+            sql = "INSERT INTO nutzer_vector_alle (id,wikipediaid,score) VALUES (%s,%s,%s);"
+
+        for wikipediaid in vector:
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, (personid, wikipediaid, vector[wikipediaid]))
+                    Database.connection.commit()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+
+
+    @staticmethod
+    def getuserinterestvector(personid, mode):
+        sql = ''
+        if mode == 0:
+            sql = 'SELECT wikipediaid, score FROM nutzer_vector_personen WHERE id=%s;'
+        if mode == 1:
+            sql = 'SELECT wikipediaid, score FROM nutzer_vector_ohne_personen WHERE id=%s;'
+        if mode == 2:
+            sql = 'SELECT wikipediaid, score FROM nutzer_vector_alle WHERE id=%s;'
+
+        results = {}
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, personid)
+                for row in cursor:
+                    results[row.get('wikipediaid')]=float(row.get('score'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
+
+
+
+
+
+
+
 
     @staticmethod
     def checkanddeletearticleexceptdate(date):

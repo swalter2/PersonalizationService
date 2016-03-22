@@ -40,6 +40,7 @@ class Learning:
 
     @staticmethod
     def global_learn():
+        Learning.database.deleteuserinterestvector()
         userids = Learning.database.getuserids()
         articleids = Learning.database.getarticleidsfordate(Learning.date)
         for userid in userids:
@@ -51,30 +52,62 @@ class Learning:
                     Learning.database.adduserarticlescore(userid, articleid, score)
 
 
+    @staticmethod
+    def getpersoninterestvector(userid, interests, mode):
+        interest_vector = Learning.database.getuserinterestvector(userid,mode)
+        if len(interest_vector) > 0:
+            return interest_vector
+        else:
+            interest_vector = {}
+            for i in interests:
+                interest_input = ""
+                for term, tag in Learning._lemmatizer.lemmatize(i):
+                    interest_input += " "+term
+                interest_input = interest_input.strip()
+                tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
+                for wikipediaid in tmp_vector:
+                    if wikipediaid in interest_vector:
+                        # in the moment only addition of the scores, maybe also try averaging of the scores
+                        tmp = interest_vector[wikipediaid]
+                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]
+                    else:
+                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]
+            Learning.database.adduserinterestvector(userid, interest_vector, mode)
+            return interest_vector
+
+
+    @staticmethod
+    def relearn(interests, userid):
+        list_article_ids = Learning.database.getarticleidswithoutdate()
+        Learning.learn(interests, list_article_ids, userid)
+
 
     # extend to person ID, load from database such things like age etc
     @staticmethod
-    def learn(interests, list_article_ids, person_id):
+    def learn(interests, list_article_ids, userid):
         mode = 2
-        information = Learning.database.getuserinterests(person_id)
-        interest_vector = {}
+        information = Learning.database.getuserinterests(userid)
+        interest_vector = Learning.getpersoninterestvector(userid, information, mode)
+        #for i in information:
+        #    interests.append(i)
 
-        for i in information:
-            interests.append(i)
+        if len(interests)>0:
 
-        for i in interests:
-            input = ""
-            for term, tag in Learning._lemmatizer.lemmatize(i):
-                input += " "+term
+            for i in interests:
+                interest_input = ""
+                for term, tag in Learning._lemmatizer.lemmatize(i):
+                    interest_input += " "+term
+                interest_input = interest_input.strip()
 
-            tmp_vector = Learning.database.getarticlesfromwikipedia(mode, input[1:])
-            for wikipediaid in tmp_vector:
-                if wikipediaid in interest_vector:
-                    # in the moment only addition of the scores, maybe also try averaging of the scores
-                    tmp = interest_vector[wikipediaid]
-                    interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]
-                else:
-                    interest_vector[wikipediaid] = tmp_vector[wikipediaid]
+                tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
+                for wikipediaid in tmp_vector:
+                    if wikipediaid in interest_vector:
+                        # in the moment only addition of the scores, maybe also try averaging of the scores
+                        tmp = interest_vector[wikipediaid]
+                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]
+                    else:
+                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]
+
         results = {}
         for article_id in list_article_ids:
             article_vector = {}
