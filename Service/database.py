@@ -209,6 +209,27 @@ class Database:
 
 
     @staticmethod
+    def getpersonalizedarticles(personid):
+        results = []
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT articleid, score, titel FROM personalisierung, artikel WHERE userid=%s ' \
+                      'and artikel.id=articleid ORDER BY score DESC LIMIT 30;'
+                cursor.execute(sql,personid)
+                for row in cursor:
+                    tmp_hm = {}
+                    tmp_hm['artikelid'] = row.get('articleid')
+                    tmp_hm['score'] = row.get('score')
+                    tmp_hm['titel'] = row.get('titel')
+
+                    results.append(tmp_hm)
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
+
+
+    @staticmethod
     def checkanddeletearticleexceptdate(date):
         dates = set()
         try:
