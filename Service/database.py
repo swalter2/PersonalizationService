@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pymysql.cursors
 import sys
 import operator
@@ -213,7 +214,7 @@ class Database:
         results = []
         try:
             with Database.connection.cursor() as cursor:
-                sql = 'SELECT articleid, score, titel FROM personalisierung, artikel WHERE userid=%s ' \
+                sql = 'SELECT articleid, score, titel, text FROM personalisierung, artikel WHERE userid=%s ' \
                       'and artikel.id=articleid ORDER BY score DESC LIMIT 30;'
                 cursor.execute(sql,personid)
                 for row in cursor:
@@ -221,13 +222,32 @@ class Database:
                     tmp_hm['artikelid'] = row.get('articleid')
                     tmp_hm['score'] = row.get('score')
                     tmp_hm['titel'] = row.get('titel')
-
+                    tmp_hm['text'] = row.get('text')
                     results.append(tmp_hm)
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
         return results
 
+
+    @staticmethod
+    def getarticletext(articleid):
+        results = []
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT titel, text FROM artikel WHERE id=%s;'
+                cursor.execute(sql, articleid)
+                for row in cursor:
+                    tmp_hm = {}
+                    tmp_hm['artikelid'] = articleid
+                    tmp_hm['titel'] = row.get('titel')
+                    tmp_hm['text'] = row.get('text')
+
+                    results.append(tmp_hm)
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
 
     @staticmethod
     def checkanddeletearticleexceptdate(date):

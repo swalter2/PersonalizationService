@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import math
 
 def combine_noun_adjectives(tags):

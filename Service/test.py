@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #from learning import Learning
 from database import Database
 from xmlimporter import XMLImporter

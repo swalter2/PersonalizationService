@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -69,9 +70,16 @@ class XMLImporter:
                             if quelle.tag == "seite-start":
                                 artikel_seite_start = str(quelle.text)
 
-            if artikel_id not in processed_pdf and len(artikel_titel)>10 and 'Familienchronik' not in artikel_titel \
-                    and 'SO GEHT’S WEITER' not in artikel_titel and 'WOHIN HEUTE' not in artikel_titel and 'TERMINKALENDER' not in artikel_titel\
-                    and 'TERMIN-KALENDER' not in artikel_titel and artikel_text not in XMLImporter.text_hm:
+            if artikel_id not in processed_pdf \
+                    and len(artikel_titel) > 10 \
+                    and 'Familienchronik' not in artikel_titel \
+                    and 'SO GEHT’S WEITER' not in artikel_titel \
+                    and 'WOHIN HEUTE' not in artikel_titel \
+                    and 'TERMINKALENDER' not in artikel_titel\
+                    and 'TERMIN-KALENDER' not in artikel_titel \
+                    and 'Öffnungszeiten' not in artikel_titel \
+                    and artikel_text not in XMLImporter.text_hm:
+
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
                 #ignore articles without noun/adjective content
                 if len(tags) > 2:

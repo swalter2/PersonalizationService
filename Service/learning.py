@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from database import Database
 import operator
 from textblob_de.lemmatizers import PatternParserLemmatizer

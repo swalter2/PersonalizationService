@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, jsonify
 from database import Database
 
@@ -10,11 +11,16 @@ db = 'wikipedia_new'
 database = Database(host, user, password, db)
 
 
-@app.route('/personalization/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    results = database.getpersonalizedarticles(int(task_id))
-
+@app.route('/personalization/<int:person_id>', methods=['GET'])
+def get_articles(person_id):
+    results = database.getpersonalizedarticles(person_id)
     return jsonify({'Personalisierung': results})
+
+
+#@app.route('/article/<string:article_id>', methods=['GET'])
+#def get_articletext(article_id):
+#    results = database.getarticletext(article_id)
+#    return jsonify({'Artikel': results})
 
 
 #@app.errorhandler(404)
