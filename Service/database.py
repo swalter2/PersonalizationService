@@ -46,7 +46,6 @@ class Database:
         else:
             query += ";"
 
-
         results = {}
         try:
             with Database.connection.cursor() as cursor:
@@ -58,6 +57,9 @@ class Database:
             raise
         #sorted_results = sorted(results.items(), key=operator.itemgetter(1), reverse=True)
         #print(term, sorted_results)
+        if len(results) ==0:
+            results['0']=0
+
 
         if mode == 0:
             Database.results_alle[term] = results
@@ -71,19 +73,19 @@ class Database:
         return results
 
 
-    @staticmethod
-    def getuserinterests(person_id):
-        information = []
-        query = 'Select distinct interesse from nutzer_interessen where id=%s;'
-        try:
-            with Database.connection.cursor() as cursor:
-                cursor.execute(query, person_id)
-                for row in cursor:
-                    information.append(row.get('interesse'))
-        except :
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-        return information
+    #@staticmethod
+    #def getuserinterests(person_id):
+    #    information = []
+    #    query = 'Select distinct interesse from nutzer_interessen where id=%s;'
+    #    try:
+    #        with Database.connection.cursor() as cursor:
+    #            cursor.execute(query, person_id)
+    #            for row in cursor:
+    #                information.append(row.get('interesse'))
+    #    except :
+    #        print("Unexpected error:", sys.exc_info()[0])
+    #        raise
+    #    return information
 
 
     @staticmethod
@@ -145,10 +147,32 @@ class Database:
 
 
     @staticmethod
-    def adduserarticlescore(userid,articleid,score):
+    def add_personalization_all_userarticle(userid, articleid, score):
         try:
             with Database.connection.cursor() as cursor:
-                sql = "INSERT INTO personalisierung (articleid,userid,score) VALUES (%s,%s,%s);"
+                sql = "INSERT INTO personalisierung_alle (articleid,userid,score) VALUES (%s,%s,%s);"
+                cursor.execute(sql, (articleid, userid, score))
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+    @staticmethod
+    def add_personalization_person_userarticle(userid, articleid, score):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO personalisierung_personen (articleid,userid,score) VALUES (%s,%s,%s);"
+                cursor.execute(sql, (articleid, userid, score))
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+    @staticmethod
+    def add_personalization_without_persons_userarticle(userid, articleid, score):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO personalisierung_ohne_personen (articleid,userid,score) VALUES (%s,%s,%s);"
                 cursor.execute(sql, (articleid, userid, score))
                 Database.connection.commit()
         except:
@@ -162,9 +186,9 @@ class Database:
         vector = {}
         query = ""
         if mode == 0:
-            pass
+            query = 'Select distinct wikipediaid,score from vector_personen where id=%s;'
         if mode == 1:
-            pass
+            query = 'Select distinct wikipediaid,score from vector_ohne_personen where id=%s;'
         if mode == 2:
             query = 'Select distinct wikipediaid,score from vector_alle where id=%s;'
         try:
@@ -229,7 +253,7 @@ class Database:
         try:
             with Database.connection.cursor() as cursor:
                 sql = 'SELECT articleid, score, titel, text FROM personalisierung, artikel WHERE userid=%s ' \
-                      'and artikel.id=articleid ORDER BY score DESC LIMIT 30;'
+                      'and artikel.id=articleid ORDER BY score DESC LIMIT 10;'
                 cursor.execute(sql,personid)
                 for row in cursor:
                     tmp_hm = {}
@@ -264,82 +288,6 @@ class Database:
         return results
 
     @staticmethod
-    def deleteuserinterestvector():
-        try:
-            with Database.connection.cursor() as cursor:
-                sql = 'DELETE FROM nutzer_vector_alle WHERE 1;'
-                cursor.execute(sql)
-                Database.connection.commit()
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-        try:
-            with Database.connection.cursor() as cursor:
-                sql = 'DELETE FROM nutzer_vector_personen WHERE 1;'
-                cursor.execute(sql)
-                Database.connection.commit()
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-        try:
-            with Database.connection.cursor() as cursor:
-                sql = 'DELETE FROM nutzer_vector_ohne_personen WHERE 1;'
-                cursor.execute(sql)
-                Database.connection.commit()
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-
-
-    @staticmethod
-    def adduserinterestvector(personid, vector, mode):
-        sql = ''
-        if mode == 0:
-            sql = "INSERT INTO nutzer_vector_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
-        if mode == 1:
-            sql = "INSERT INTO nutzer_vector_ohne_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
-        if mode == 2:
-            sql = "INSERT INTO nutzer_vector_alle (id,wikipediaid,score) VALUES (%s,%s,%s);"
-
-        for wikipediaid in vector:
-            try:
-                with Database.connection.cursor() as cursor:
-                    cursor.execute(sql, (personid, wikipediaid, vector[wikipediaid]))
-                    Database.connection.commit()
-            except:
-                print("Unexpected error:", sys.exc_info()[0])
-                raise
-
-
-    @staticmethod
-    def getuserinterestvector(personid, mode):
-        sql = ''
-        if mode == 0:
-            sql = 'SELECT wikipediaid, score FROM nutzer_vector_personen WHERE id=%s;'
-        if mode == 1:
-            sql = 'SELECT wikipediaid, score FROM nutzer_vector_ohne_personen WHERE id=%s;'
-        if mode == 2:
-            sql = 'SELECT wikipediaid, score FROM nutzer_vector_alle WHERE id=%s;'
-
-        results = {}
-        try:
-            with Database.connection.cursor() as cursor:
-                cursor.execute(sql, personid)
-                for row in cursor:
-                    results[row.get('wikipediaid')]=float(row.get('score'))
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-        return results
-
-
-
-
-
-
-
-
-    @staticmethod
     def checkanddeletearticleexceptdate(date):
         dates = set()
         try:
@@ -363,24 +311,115 @@ class Database:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
 
-        #    for d in dates:
-        #        if d != date:
-        #            try:
-        #                with Database.connection.cursor() as cursor:
-        #                    sql = "Select id from artikel where datum=%s"
-        #                    cursor.execute(sql, d)
-        #                    for row in cursor:
-        #                        ids.add(row.get('id'))
-        #            except:
-        #                print("Unexpected error:", sys.exc_info()[0])
-        #                raise
-        #    #
-        #for id in ids:
-        #    try:
-        #        with Database.connection.cursor() as cursor:
-        #            sql = 'DELETE FROM `artikel` WHERE id=%s;'
-        #            cursor.execute(sql, id)
-        #            #print("DELETE FROM `artikel` WHERE id="+id+";")
-        #    except:
-        #        print("Unexpected error:", sys.exc_info()[0])
-        #        raise
+    @staticmethod
+    def updatedbwithinterestvector(id,vector, mode):
+        print('updatedbwithinterestvector',id,mode)
+        sql = ''
+        if mode == 0:
+            sql = "INSERT INTO interessen_vector_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
+        if mode == 1:
+            sql = "INSERT INTO interessen_vector_ohne_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
+        if mode == 2:
+            sql = "INSERT INTO interessen_vector_alle (id,wikipediaid,score) VALUES (%s,%s,%s);"
+
+        for wikipediaid in vector:
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, (id, wikipediaid, vector[wikipediaid]))
+                    Database.connection.commit()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+
+    # create vector for each three modes for the given interest, then get vector for the given id/mode and update vector "vector" accoring to the score
+    @staticmethod
+    def createinterestvectorandupdatevector(id, vector, mode, score):
+        print('createinterestvectorandupdatevector',id)
+        sql = 'SELECT DISTINCT name FROM interessen WHERE id=%s;'
+
+        interest = ""
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, id)
+                for row in cursor:
+                    print(row.get('name'))
+                    interest = row.get('name')
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        print
+        print
+        tmp_vector_0 = Database.getarticlesfromwikipedia(0, interest)
+        tmp_vector_1 = Database.getarticlesfromwikipedia(1, interest)
+        tmp_vector_2 = Database.getarticlesfromwikipedia(2, interest)
+        Database.updatedbwithinterestvector(id, tmp_vector_0, 0)
+        Database.updatedbwithinterestvector(id, tmp_vector_1, 1)
+        Database.updatedbwithinterestvector(id, tmp_vector_2, 2)
+        tmp_vector = {}
+        if mode == 0:
+            tmp_vector = tmp_vector_0
+        if mode == 1:
+            tmp_vector = tmp_vector_1
+        if mode == 2:
+            tmp_vector = tmp_vector_2
+
+        for wikipediaid in tmp_vector:
+            if wikipediaid in vector:
+                # in the moment only addition of the scores, maybe also try averaging of the scores
+                tmp = vector[wikipediaid]
+                vector[wikipediaid] = tmp + tmp_vector[wikipediaid]*score
+            else:
+                vector[wikipediaid] = tmp_vector[wikipediaid]*score
+        return vector
+
+    @staticmethod
+    def getuserinterestvector(personid, mode):
+
+        # step1: Get all interest for a user
+
+        sql = 'SELECT DISTINCT interessensid, score FROM nutzer_interessen WHERE nutzerid=%s;'
+        interestsids = {}
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, personid)
+                for row in cursor:
+                    interestsids[row.get('interessensid')] = 0.0+(row.get('score'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        vector = {}
+
+        # step2: Check, if each interest is represented as a vector, if not, create vector for interest
+        # step3: get for each interest, score (defined for ech user) and vector
+        for id in interestsids:
+            sql = ''
+            if mode == 0:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
+            if mode == 1:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
+            if mode == 2:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, id)
+                    counter = 0
+                    for row in cursor:
+                        wikipediaid = row.get('wikipediaid')
+                        score = 0.0+(row.get('score'))
+                        # step4: multiply each locacl vector by interest score (defined pers user) and add to global vector.
+                        if wikipediaid in vector:
+                            tmp = vector[wikipediaid]
+                            vector[wikipediaid] = tmp + score*interestsids[id]
+                        else:
+                            vector[wikipediaid] = score*interestsids[id]
+                        counter += 1
+                    print("counter:"+str(counter),personid)
+                    if counter == 0:
+                        vector = Database.createinterestvectorandupdatevector(id, vector, mode, interestsids[id])
+
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+        # step5: return "overall interests vector"
+        return vector;

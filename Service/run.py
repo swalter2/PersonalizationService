@@ -20,9 +20,12 @@ database = Database(host, user, password, db)
 
 today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
+#datum = '21032016'
 
 url = "http://ftp.forschungsdatenmanagement.org/nw/8586833-Kogni-"+datum+".zip"
+print(url)
 filename = wget.download(url)
+#filename = "8586833-Kogni-"+datum+".zip"
 print(filename)
 importer = XMLImporter(database)
 with zipfile.ZipFile(filename, 'r') as z:

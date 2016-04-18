@@ -1,19 +1,44 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from database import Database
+from learning import Learning
+import datetime
+import sys
 
 app = Flask(__name__)
 host = 'localhost'
 user = 'wikipedia_new'
 password = '1234567'
 db = 'wikipedia_new'
+today = datetime.datetime.now()
+datum = today.strftime("%d%m%Y")
 
 database = Database(host, user, password, db)
+learning = Learning(host, user, password, db, datum)
 
 
-@app.route('/personalization/<int:person_id>', methods=['GET'])
-def get_articles(person_id):
-    results = database.getpersonalizedarticles(person_id)
+# curl -i http://localhost:5000/personalization/?personid=1&interests=Kunst
+@app.route('/personalization/', methods=['GET'])
+def get_articles():
+    for x in request.args:
+        print(x)
+    userid= int(request.args.get('personid'))
+    interests = []
+    try:
+        tmp = request.args.get('interests')
+        if tmp != None:
+            print(tmp)
+            if "," in tmp:
+                for i in tmp.split(","):
+                    interests.append(i.replace('_'),' ')
+            else:
+                interests.append(tmp.replace('_', ' '))
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        raise
+    if len(interests) > 0:
+        learning.relearn(interests,userid)
+    results = database.getpersonalizedarticles(userid)
     return jsonify({'Personalisierung': results})
 
 
@@ -28,4 +53,4 @@ def get_articles(person_id):
 #    return make_response(jsonify({'error': 'Not found'}), 404)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

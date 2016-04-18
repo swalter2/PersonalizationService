@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from database import Database
-import operator
 from textblob_de.lemmatizers import PatternParserLemmatizer
 from sklearn import svm
 from general import *
@@ -40,7 +39,7 @@ class Learning:
 
     @staticmethod
     def global_learn():
-        Learning.database.deleteuserinterestvector()
+        #Learning.database.deleteuserinterestvector()
         userids = Learning.database.getuserids()
         articleids = Learning.database.getarticleidsfordate(Learning.date)
         for userid in userids:
@@ -49,31 +48,8 @@ class Learning:
             for articleid in results:
                 score = results[articleid]
                 if score > 0.0:
-                    Learning.database.adduserarticlescore(userid, articleid, score)
+                    Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
-
-    @staticmethod
-    def getpersoninterestvector(userid, interests, mode):
-        interest_vector = Learning.database.getuserinterestvector(userid,mode)
-        if len(interest_vector) > 0:
-            return interest_vector
-        else:
-            interest_vector = {}
-            for i in interests:
-                interest_input = ""
-                for term, tag in Learning._lemmatizer.lemmatize(i):
-                    interest_input += " "+term
-                interest_input = interest_input.strip()
-                tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
-                for wikipediaid in tmp_vector:
-                    if wikipediaid in interest_vector:
-                        # in the moment only addition of the scores, maybe also try averaging of the scores
-                        tmp = interest_vector[wikipediaid]
-                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]
-                    else:
-                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]
-            Learning.database.adduserinterestvector(userid, interest_vector, mode)
-            return interest_vector
 
 
     @staticmethod
@@ -86,8 +62,8 @@ class Learning:
     @staticmethod
     def learn(interests, list_article_ids, userid):
         mode = 2
-        information = Learning.database.getuserinterests(userid)
-        interest_vector = Learning.getpersoninterestvector(userid, information, mode)
+        #information = Learning.database.getuserinterests(userid)
+        interest_vector = Learning.database.getuserinterestvector(userid, mode)
         #for i in information:
         #    interests.append(i)
 
