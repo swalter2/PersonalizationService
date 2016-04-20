@@ -249,19 +249,19 @@ class Database:
 
     @staticmethod
     def getpersonalizedarticles(personid):
-        results = []
+        results = {}
         try:
             with Database.connection.cursor() as cursor:
-                sql = 'SELECT articleid, score, titel, text FROM personalisierung, artikel WHERE userid=%s ' \
-                      'and artikel.id=articleid ORDER BY score DESC LIMIT 10;'
+                sql = 'SELECT articleid, score, titel, text FROM personalisierung_alle, artikel WHERE userid=%s ' \
+                      'and artikel.id=articleid ORDER BY score DESC LIMIT 20;'
                 cursor.execute(sql,personid)
                 for row in cursor:
                     tmp_hm = {}
-                    tmp_hm['artikelid'] = row.get('articleid')
+                    tmp_hm['id'] = row.get('articleid')
                     tmp_hm['score'] = row.get('score')
                     tmp_hm['titel'] = row.get('titel')
                     tmp_hm['text'] = row.get('text')
-                    results.append(tmp_hm)
+                    results[row.get('articleid')] = tmp_hm
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -373,6 +373,31 @@ class Database:
         return vector
 
     @staticmethod
+    def getuserinterests(personid):
+
+        # step1: Get all interest for a user
+
+        sql = 'SELECT DISTINCT nutzer_interessen.interessensid, nutzer_interessen.score, interessen.name FROM nutzer_interessen, interessen WHERE nutzer_interessen.nutzerid=%s and nutzer_interessen.interessensid=interessen.id;'
+        interests = {}
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, personid)
+                for row in cursor:
+                    tmp = {}
+                    tmp['score'] = row.get('score')
+                    tmp['name'] = row.get('name')
+                    tmp['id'] = row.get('interessensid')
+                    interests[row.get('interessensid')] = tmp
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        return interests
+
+
+
+
+    @staticmethod
     def getuserinterestvector(personid, mode):
 
         # step1: Get all interest for a user
@@ -414,7 +439,6 @@ class Database:
                         else:
                             vector[wikipediaid] = score*interestsids[id]
                         counter += 1
-                    print("counter:"+str(counter),personid)
                     if counter == 0:
                         vector = Database.createinterestvectorandupdatevector(id, vector, mode, interestsids[id])
 
