@@ -47,4 +47,4 @@ def get_scores_for_id(args):
 
 
 if __name__ == '__main__':
-    service.run(debug=True)
+    service.run(debug=False)
