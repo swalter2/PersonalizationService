@@ -35,6 +35,7 @@ class Learning:
 
     @staticmethod
     def prediction(cos, user_information, artikel_id):
+
         return cos
 
     @staticmethod
