@@ -2,13 +2,18 @@
 import pymysql.cursors
 import sys
 import operator
+#import mysql.connector
 
+ONLY_PERSONS = 0
+WITHOUT_PERSONS = 1
+ALL_ARTICLES = 2
 
 class Database:
     connection = ''
     results_alle = {}
     results_personen = {}
     results_ohne_personen = {}
+
 
     def __init__(self, host, user, password, db):
         Database.connection = pymysql.connect(host=host,
@@ -22,25 +27,28 @@ class Database:
     @staticmethod
     def getarticlesfromwikipedia(mode, term, limit=0):
         term = term.replace("_"," ")
-        switcher = {
-            0: " and person=1",
-            1: " and person=0",
-            2: "",
-        }
 
-        if mode == 0 and term in Database.results_alle:
+        if mode == ALL_ARTICLES and term in Database.results_alle:
             return Database.results_alle[term]
 
-        if mode == 1 and term in Database.results_personen:
+        if mode == ONLY_PERSONS and term in Database.results_personen:
             return Database.results_personen[term]
 
-        if mode == 2 and term in Database.results_ohne_personen:
+        if mode == WITHOUT_PERSONS and term in Database.results_ohne_personen:
             return Database.results_ohne_personen[term]
 
         query = 'SELECT id,  MATCH (body) AGAINST (%s IN NATURAL LANGUAGE MODE) AS score ' \
                 'FROM wikipedia WHERE MATCH (body) AGAINST (%s IN NATURAL LANGUAGE MODE)'
 
-        query += switcher.get(mode)
+        if mode == ALL_ARTICLES:
+            query += ''
+
+        if mode == ONLY_PERSONS:
+            query += ' and person=1'
+
+        if mode == WITHOUT_PERSONS:
+            query += ' and person=0'
+
         if limit > 0:
             query += " LIMIT "+str(limit)+";"
         else:
@@ -57,17 +65,18 @@ class Database:
             raise
         #sorted_results = sorted(results.items(), key=operator.itemgetter(1), reverse=True)
         #print(term, sorted_results)
-        if len(results) ==0:
-            results['0']=0
+        #sollte das bei Interessen stehen?
+        #if len(results) ==0:
+        #    results['0']=0
 
 
-        if mode == 0:
+        if mode == ALL_ARTICLES:
             Database.results_alle[term] = results
 
-        if mode == 1:
+        if mode == ONLY_PERSONS:
             Database.results_personen[term] = results
 
-        if mode == 2:
+        if mode == WITHOUT_PERSONS:
             Database.results_ohne_personen[term] = results
 
         return results
@@ -134,7 +143,7 @@ class Database:
     @staticmethod
     def getarticleidswithoutdate():
         articleids = []
-        query = 'Select distinct id from artikel where 1s;'
+        query = 'Select distinct id from artikel;'
         try:
             with Database.connection.cursor() as cursor:
                 cursor.execute(query)
@@ -148,6 +157,7 @@ class Database:
 
     @staticmethod
     def add_personalization_all_userarticle(userid, articleid, score):
+        #print('called add_personalization_all_userarticle')
         try:
             with Database.connection.cursor() as cursor:
                 sql = "INSERT INTO personalisierung_alle (articleid,userid,score) VALUES (%s,%s,%s);"
@@ -169,7 +179,7 @@ class Database:
             raise
 
     @staticmethod
-    def add_personalization_without_persons_userarticle(userid, articleid, score):
+    def add_personalization_without_person_userarticle(userid, articleid, score):
         try:
             with Database.connection.cursor() as cursor:
                 sql = "INSERT INTO personalisierung_ohne_personen (articleid,userid,score) VALUES (%s,%s,%s);"
@@ -185,11 +195,11 @@ class Database:
     def getarticlevector(artikel_id, mode):
         vector = {}
         query = ""
-        if mode == 0:
+        if mode == ONLY_PERSONS:
             query = 'Select distinct wikipediaid,score from vector_personen where id=%s;'
-        if mode == 1:
+        if mode == WITHOUT_PERSONS:
             query = 'Select distinct wikipediaid,score from vector_ohne_personen where id=%s;'
-        if mode == 2:
+        if mode == ALL_ARTICLES:
             query = 'Select distinct wikipediaid,score from vector_alle where id=%s;'
         try:
             with Database.connection.cursor() as cursor:
@@ -315,11 +325,11 @@ class Database:
     def updatedbwithinterestvector(id,vector, mode):
         print('updatedbwithinterestvector',id,mode)
         sql = ''
-        if mode == 0:
+        if mode == ONLY_PERSONS:
             sql = "INSERT INTO interessen_vector_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
-        if mode == 1:
+        if mode == WITHOUT_PERSONS:
             sql = "INSERT INTO interessen_vector_ohne_personen (id,wikipediaid,score) VALUES (%s,%s,%s);"
-        if mode == 2:
+        if mode == ALL_ARTICLES:
             sql = "INSERT INTO interessen_vector_alle (id,wikipediaid,score) VALUES (%s,%s,%s);"
 
         for wikipediaid in vector:
@@ -347,20 +357,20 @@ class Database:
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-        print
-        print
-        tmp_vector_0 = Database.getarticlesfromwikipedia(0, interest)
-        tmp_vector_1 = Database.getarticlesfromwikipedia(1, interest)
-        tmp_vector_2 = Database.getarticlesfromwikipedia(2, interest)
-        Database.updatedbwithinterestvector(id, tmp_vector_0, 0)
-        Database.updatedbwithinterestvector(id, tmp_vector_1, 1)
-        Database.updatedbwithinterestvector(id, tmp_vector_2, 2)
+
+        tmp_vector_0 = Database.getarticlesfromwikipedia(ONLY_PERSONS, interest)
+        tmp_vector_1 = Database.getarticlesfromwikipedia(WITHOUT_PERSONS, interest)
+        tmp_vector_2 = Database.getarticlesfromwikipedia(ALL_ARTICLES, interest)
+        Database.updatedbwithinterestvector(id, tmp_vector_0, ONLY_PERSONS)
+        Database.updatedbwithinterestvector(id, tmp_vector_1, WITHOUT_PERSONS)
+        Database.updatedbwithinterestvector(id, tmp_vector_2, ALL_ARTICLES)
+
         tmp_vector = {}
-        if mode == 0:
+        if mode == ONLY_PERSONS:
             tmp_vector = tmp_vector_0
-        if mode == 1:
+        if mode == WITHOUT_PERSONS:
             tmp_vector = tmp_vector_1
-        if mode == 2:
+        if mode == ALL_ARTICLES:
             tmp_vector = tmp_vector_2
 
         for wikipediaid in tmp_vector:
@@ -398,7 +408,7 @@ class Database:
 
 
     @staticmethod
-    def getuserinterestvector(personid, mode):
+    def getuserinterestvector(personid, mode, updatedscore_hm = {}):
 
         # step1: Get all interest for a user
 
@@ -415,15 +425,21 @@ class Database:
 
         vector = {}
 
+        if len(updatedscore_hm)>0:
+            for i in updatedscore_hm:
+                #make sure no new interests are added here
+                if i in interestsids:
+                    interestsids[i] = interestsids[i]+0,0
+
         # step2: Check, if each interest is represented as a vector, if not, create vector for interest
         # step3: get for each interest, score (defined for ech user) and vector
         for id in interestsids:
             sql = ''
-            if mode == 0:
+            if mode == ONLY_PERSONS:
                 sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
-            if mode == 1:
+            if mode == WITHOUT_PERSONS:
                 sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
-            if mode == 2:
+            if mode == ALL_ARTICLES:
                 sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
             try:
                 with Database.connection.cursor() as cursor:
@@ -447,3 +463,33 @@ class Database:
                 raise
         # step5: return "overall interests vector"
         return vector;
+
+    @staticmethod
+    def deleteuserinterestvector(userid):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "DELETE FROM personalisierung_alle WHERE userid=%s;"
+                cursor.execute(sql,userid)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "DELETE FROM personalisierung_personen WHERE userid=%s;"
+                cursor.execute(sql, userid)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "DELETE FROM  personalisierung_ohne_personen WHERE userid=%s;"
+                cursor.execute(sql, userid)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+

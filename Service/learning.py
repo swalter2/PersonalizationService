@@ -3,6 +3,9 @@ from database import Database
 from textblob_de.lemmatizers import PatternParserLemmatizer
 from sklearn import svm
 from general import *
+ONLY_PERSONS = 0
+WITHOUT_PERSONS = 1
+ALL_ARTICLES = 2
 
 class Learning:
     esa = ''
@@ -44,12 +47,24 @@ class Learning:
         userids = Learning.database.getuserids()
         articleids = Learning.database.getarticleidsfordate(Learning.date)
         for userid in userids:
-            print('learning for userid:'+str(userid))
-            results = Learning.learn([], articleids, userid)
+            results = Learning.learn({}, articleids, userid, ONLY_PERSONS)
+            for articleid in results:
+                score = results[articleid]
+                if score > 0.0:
+                    Learning.database.add_personalization_person_userarticle(userid, articleid, score)
+
+            results = Learning.learn({}, articleids, userid, WITHOUT_PERSONS)
+            for articleid in results:
+                score = results[articleid]
+                if score > 0.0:
+                    Learning.database.add_personalization_without_person_userarticle(userid, articleid, score)
+
+            results = Learning.learn({}, articleids, userid, ALL_ARTICLES)
             for articleid in results:
                 score = results[articleid]
                 if score > 0.0:
                     Learning.database.add_personalization_all_userarticle(userid, articleid, score)
+
 
 
 
@@ -61,10 +76,10 @@ class Learning:
 
     # extend to person ID, load from database such things like age etc
     @staticmethod
-    def learn(interests, list_article_ids, userid):
-        mode = 2
+    def learn(interests, list_article_ids, userid, mode, updatedscore_hm={}):
         #information = Learning.database.getuserinterests(userid)
-        interest_vector = Learning.database.getuserinterestvector(userid, mode)
+        interest_vector = Learning.database.getuserinterestvector(userid, mode, updatedscore_hm)
+        #print('size interestvector for person',userid,len(interest_vector),mode)
         #for i in information:
         #    interests.append(i)
 
@@ -81,9 +96,9 @@ class Learning:
                     if wikipediaid in interest_vector:
                         # in the moment only addition of the scores, maybe also try averaging of the scores
                         tmp = interest_vector[wikipediaid]
-                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]
+                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]*interests[i]
                     else:
-                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]
+                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]*interests[i]
 
         results = {}
         for article_id in list_article_ids:
