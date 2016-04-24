@@ -6,6 +6,9 @@ except ImportError:
 from textblob_de.lemmatizers import PatternParserLemmatizer
 from general import *
 
+ONLY_PERSONS = 0
+WITHOUT_PERSONS = 1
+ALL_ARTICLES = 2
 
 class XMLImporter:
     _lemmatizer = ''
@@ -89,7 +92,7 @@ class XMLImporter:
                                       tags,
                                       artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
                                       artikel_seite_start, artikel_abbildung, artikel_rubrik,
-                                      artikel_ressort, artikel_titel, XMLImporter.getvector(tags,2), XMLImporter.getvector(tags,1), XMLImporter.getvector(tags,0))
+                                      artikel_ressort, artikel_titel, XMLImporter.getvector(tags, ALL_ARTICLES), XMLImporter.getvector(tags, ONLY_PERSONS), XMLImporter.getvector(tags, WITHOUT_PERSONS))
                     XMLImporter.database.storearticle(new_article)
                     XMLImporter.text_hm.add(artikel_text)
                     print("stored: "+new_article.titel)
@@ -115,7 +118,7 @@ class XMLImporter:
 
         article_vector = {}
         for input in hm_tags:
-            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 200)
+            tmp_vector = XMLImporter.database.getarticlesfromwikipedia(mode, input, 100)
             for title in tmp_vector:
                 if title in article_vector:
                     # in the moment only addition of the scores, maybe also try averaging of the scores
