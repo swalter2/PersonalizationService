@@ -3,6 +3,8 @@ from database import Database
 from textblob_de.lemmatizers import PatternParserLemmatizer
 from sklearn import svm
 from general import *
+import operator
+from itertools import islice
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
@@ -12,7 +14,6 @@ class Learning:
     database = ''
     _lemmatizer = ''
     clf = ''
-    article_vector_hm = ''
     date = ''
 
     def __init__(self, host, user, password, db, date):
@@ -47,6 +48,7 @@ class Learning:
         userids = Learning.database.getuserids()
         articleids = Learning.database.getarticleidsfordate(Learning.date)
         for userid in userids:
+            print('learning for '+userid)
             results = Learning.learn({}, articleids, userid, ONLY_PERSONS)
             for articleid in results:
                 score = results[articleid]
@@ -78,7 +80,14 @@ class Learning:
     @staticmethod
     def learn(interests, list_article_ids, userid, mode, updatedscore_hm={}):
         #information = Learning.database.getuserinterests(userid)
-        interest_vector = Learning.database.getuserinterestvector(userid, mode, updatedscore_hm)
+        interest_vector_user = Learning.database.getuserinterestvector(userid, mode, updatedscore_hm)
+
+        sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
+        reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, 100))
+        reduced_sorted_interest_vector_hm = {}
+        for x,y in reduced_sorted_interest_vector:
+            reduced_sorted_interest_vector_hm[x] = y
+
         #print('size interestvector for person',userid,len(interest_vector),mode)
         #for i in information:
         #    interests.append(i)
@@ -93,24 +102,25 @@ class Learning:
 
                 tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
                 for wikipediaid in tmp_vector:
-                    if wikipediaid in interest_vector:
+                    if wikipediaid in interest_vector_user:
                         # in the moment only addition of the scores, maybe also try averaging of the scores
-                        tmp = interest_vector[wikipediaid]
-                        interest_vector[wikipediaid] = tmp + tmp_vector[wikipediaid]*interests[i]
+                        tmp = interest_vector_user[wikipediaid]
+                        interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*interests[i]
                     else:
-                        interest_vector[wikipediaid] = tmp_vector[wikipediaid]*interests[i]
+                        interest_vector_user[wikipediaid] = tmp_vector[wikipediaid]*interests[i]
 
         results = {}
         for article_id in list_article_ids:
             article_vector = {}
-            if article_id+str(mode) in Learning.article_vector_hm:
-                article_vector = Learning.article_vector_hm[article_id+str(mode)]
-            else:
-                article_vector = Learning.database.getarticlevector(article_id, mode)
-                Learning.article_vector_hm[article_id+str(mode)] = article_vector
+            article_vector = Learning.database.getarticlevector(article_id, mode)
+            Learning.article_vector_hm[article_id+str(mode)] = article_vector
 
-            #sorted_results = sorted(interest_vector.items(), key=operator.itemgetter(1), reverse=True)
+            sorted_article_vector = sorted(article_vector.items(), key=operator.itemgetter(1),reverse=True)
+            reduced_sorted_article_vector = list(islice(sorted_article_vector, 100))
+            reduced_sorted_article_vector_hm = {}
+            for x, y in reduced_sorted_article_vector:
+                reduced_sorted_article_vector_hm[x] = y
 
-            cos = calcualtecos(interest_vector, article_vector)
+            cos = calcualtecos(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             results[article_id] = Learning.prediction(cos, interests, article_id)
         return results

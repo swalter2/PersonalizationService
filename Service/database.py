@@ -3,6 +3,7 @@ import pymysql.cursors
 import sys
 import operator
 #import mysql.connector
+from textblob_de.lemmatizers import PatternParserLemmatizer
 
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
@@ -13,6 +14,7 @@ class Database:
     results_alle = {}
     results_personen = {}
     results_ohne_personen = {}
+    _lemmatizer = ''
 
 
     def __init__(self, host, user, password, db):
@@ -22,6 +24,8 @@ class Database:
                              db=db,
                              charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
+
+        Database._lemmatizer = PatternParserLemmatizer()
 
 
     @staticmethod
@@ -358,9 +362,16 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             raise
 
-        tmp_vector_0 = Database.getarticlesfromwikipedia(ONLY_PERSONS, interest)
-        tmp_vector_1 = Database.getarticlesfromwikipedia(WITHOUT_PERSONS, interest)
-        tmp_vector_2 = Database.getarticlesfromwikipedia(ALL_ARTICLES, interest)
+        tmp_vector_0 = Database.getarticlesfromwikipedia(ONLY_PERSONS, interest,100)
+        tmp_vector_1 = Database.getarticlesfromwikipedia(WITHOUT_PERSONS, interest,100)
+        tmp_vector_2 = Database.getarticlesfromwikipedia(ALL_ARTICLES, interest,100)
+        # sometimes, through spelling errors, no interest vector can be found. in order to reduce computaion time, set those interest to 0
+        if len(tmp_vector_0) == 0:
+            tmp_vector_0['0'] = 0
+        if len(tmp_vector_1) == 0:
+            tmp_vector_1['0'] = 0
+        if len(tmp_vector_2) == 0:
+            tmp_vector_2['0'] = 0
         Database.updatedbwithinterestvector(id, tmp_vector_0, ONLY_PERSONS)
         Database.updatedbwithinterestvector(id, tmp_vector_1, WITHOUT_PERSONS)
         Database.updatedbwithinterestvector(id, tmp_vector_2, ALL_ARTICLES)
@@ -492,4 +503,73 @@ class Database:
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
+
+
+    @staticmethod
+    def _tmp_add_interesse(userid, interesse, score):
+        interessen = {}
+        query = 'Select distinct id, name  from interessen;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(query)
+                for row in cursor:
+                    interessen[row.get('name')] = row.get('id')
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        print('old:' + interesse)
+        tags = Database._lemmatizer.lemmatize(interesse)
+        interesse = ""
+        for term, tag in tags:
+            interesse += " "+term
+        interesse = interesse.strip()
+        print('new:'+interesse)
+
+        interessensid = 0
+        if interesse in interessen:
+            interessensid = interessen[interesse]
+        else:
+            number = 0
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute('SELECT MAX(id) as tmp from interessen;')
+                    for row in cursor:
+                        number = int(row.get('tmp'))
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                number = 0
+                raise
+            interessensid = number+1
+            sql = "INSERT INTO interessen (id,name) VALUES (%s,%s);"
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql,(interessensid,interesse))
+                    Database.connection.commit()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+        print("interessenid:"+str(interessensid))
+        #add interesse zu nutzer_interesse, wenn nicht bereits vorhanden
+        results = set()
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute('SELECT nutzerid from nutzer_interessen WHERE nutzerid=%s and interessensid=%s;',(userid,interessensid))
+                for row in cursor:
+                    results.add(row.get('nutzerid'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            number = 0
+            raise
+        if len(results) == 0:
+            sql = "INSERT INTO nutzer_interessen (nutzerid,interessensid,score) VALUES (%s,%s,%s);"
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, (userid, interessensid, score))
+                    Database.connection.commit()
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+
+
+
 

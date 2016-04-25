@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 21. Mrz 2016 um 15:21
+-- Erstellungszeit: 25. Apr 2016 um 14:52
 -- Server Version: 5.6.21
 -- PHP-Version: 5.6.3
 
@@ -23,6 +23,37 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `annotationen`
+--
+
+DROP TABLE IF EXISTS `annotationen`;
+CREATE TABLE IF NOT EXISTS `annotationen` (
+  `nutzerid` int(11) NOT NULL,
+  `artikelid` char(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `bewertung` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `annotierte_artikel`
+--
+
+DROP TABLE IF EXISTS `annotierte_artikel`;
+CREATE TABLE IF NOT EXISTS `annotierte_artikel` (
+  `id` char(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `titel` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `text` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `datum` char(10) NOT NULL,
+  `ressort` varchar(255) NOT NULL,
+  `autor` varchar(255) NOT NULL,
+  `seite` int(11) NOT NULL,
+  `anzahl_woerter` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `artikel`
 --
 
@@ -38,13 +69,73 @@ CREATE TABLE IF NOT EXISTS `artikel` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `interessen`
+--
+
+DROP TABLE IF EXISTS `interessen`;
+CREATE TABLE IF NOT EXISTS `interessen` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `interessen_vector_alle`
+--
+
+DROP TABLE IF EXISTS `interessen_vector_alle`;
+CREATE TABLE IF NOT EXISTS `interessen_vector_alle` (
+  `id` int(11) NOT NULL,
+  `wikipediaid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `interessen_vector_ohne_personen`
+--
+
+DROP TABLE IF EXISTS `interessen_vector_ohne_personen`;
+CREATE TABLE IF NOT EXISTS `interessen_vector_ohne_personen` (
+  `id` int(11) NOT NULL,
+  `wikipediaid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `interessen_vector_personen`
+--
+
+DROP TABLE IF EXISTS `interessen_vector_personen`;
+CREATE TABLE IF NOT EXISTS `interessen_vector_personen` (
+  `id` int(11) NOT NULL,
+  `wikipediaid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `nutzer`
 --
 
 DROP TABLE IF EXISTS `nutzer`;
 CREATE TABLE IF NOT EXISTS `nutzer` (
   `id` int(11) NOT NULL,
-  `age` int(11) NOT NULL
+  `age` int(11) NOT NULL,
+  `geschlecht` char(1) NOT NULL,
+  `abschluss` varchar(255) NOT NULL,
+  `interessen_kultur` int(11) NOT NULL,
+  `interessen_lokales` int(11) NOT NULL,
+  `interessen_lokalsport` int(11) NOT NULL,
+  `interessen_politik` int(11) NOT NULL,
+  `interessen_sport` int(11) NOT NULL,
+  `interessanteste_rubrik` varchar(255) NOT NULL,
+  `plz` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -55,18 +146,45 @@ CREATE TABLE IF NOT EXISTS `nutzer` (
 
 DROP TABLE IF EXISTS `nutzer_interessen`;
 CREATE TABLE IF NOT EXISTS `nutzer_interessen` (
-  `id` int(11) NOT NULL,
-  `interesse` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
+  `nutzerid` int(11) NOT NULL,
+  `interessensid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `personalisierung`
+-- Tabellenstruktur für Tabelle `personalisierung_alle`
 --
 
-DROP TABLE IF EXISTS `personalisierung`;
-CREATE TABLE IF NOT EXISTS `personalisierung` (
+DROP TABLE IF EXISTS `personalisierung_alle`;
+CREATE TABLE IF NOT EXISTS `personalisierung_alle` (
+  `articleid` char(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `userid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `personalisierung_ohne_personen`
+--
+
+DROP TABLE IF EXISTS `personalisierung_ohne_personen`;
+CREATE TABLE IF NOT EXISTS `personalisierung_ohne_personen` (
+  `articleid` char(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `userid` int(11) NOT NULL,
+  `score` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `personalisierung_personen`
+--
+
+DROP TABLE IF EXISTS `personalisierung_personen`;
+CREATE TABLE IF NOT EXISTS `personalisierung_personen` (
   `articleid` char(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `userid` int(11) NOT NULL,
   `score` float DEFAULT NULL
@@ -130,10 +248,46 @@ CREATE TABLE IF NOT EXISTS `wikipedia` (
 --
 
 --
+-- Indizes für die Tabelle `annotationen`
+--
+ALTER TABLE `annotationen`
+ ADD KEY `nutzerid` (`nutzerid`), ADD KEY `artikelid` (`artikelid`);
+
+--
+-- Indizes für die Tabelle `annotierte_artikel`
+--
+ALTER TABLE `annotierte_artikel`
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `id` (`id`);
+
+--
 -- Indizes für die Tabelle `artikel`
 --
 ALTER TABLE `artikel`
  ADD PRIMARY KEY (`id`), ADD KEY `datum` (`datum`);
+
+--
+-- Indizes für die Tabelle `interessen`
+--
+ALTER TABLE `interessen`
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `id` (`id`);
+
+--
+-- Indizes für die Tabelle `interessen_vector_alle`
+--
+ALTER TABLE `interessen_vector_alle`
+ ADD KEY `id` (`id`);
+
+--
+-- Indizes für die Tabelle `interessen_vector_ohne_personen`
+--
+ALTER TABLE `interessen_vector_ohne_personen`
+ ADD KEY `id` (`id`);
+
+--
+-- Indizes für die Tabelle `interessen_vector_personen`
+--
+ALTER TABLE `interessen_vector_personen`
+ ADD KEY `id` (`id`);
 
 --
 -- Indizes für die Tabelle `nutzer`
@@ -145,12 +299,24 @@ ALTER TABLE `nutzer`
 -- Indizes für die Tabelle `nutzer_interessen`
 --
 ALTER TABLE `nutzer_interessen`
- ADD KEY `id` (`id`), ADD KEY `id_2` (`id`);
+ ADD KEY `nutzerid` (`nutzerid`), ADD KEY `interessensid` (`interessensid`);
 
 --
--- Indizes für die Tabelle `personalisierung`
+-- Indizes für die Tabelle `personalisierung_alle`
 --
-ALTER TABLE `personalisierung`
+ALTER TABLE `personalisierung_alle`
+ ADD KEY `articleid` (`articleid`), ADD KEY `userid` (`userid`);
+
+--
+-- Indizes für die Tabelle `personalisierung_ohne_personen`
+--
+ALTER TABLE `personalisierung_ohne_personen`
+ ADD KEY `articleid` (`articleid`), ADD KEY `userid` (`userid`);
+
+--
+-- Indizes für die Tabelle `personalisierung_personen`
+--
+ALTER TABLE `personalisierung_personen`
  ADD KEY `articleid` (`articleid`), ADD KEY `userid` (`userid`);
 
 --
@@ -182,17 +348,57 @@ ALTER TABLE `wikipedia`
 --
 
 --
+-- Constraints der Tabelle `annotationen`
+--
+ALTER TABLE `annotationen`
+ADD CONSTRAINT `annotationen_ibfk_1` FOREIGN KEY (`nutzerid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `annotationen_ibfk_2` FOREIGN KEY (`artikelid`) REFERENCES `annotierte_artikel` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints der Tabelle `interessen_vector_alle`
+--
+ALTER TABLE `interessen_vector_alle`
+ADD CONSTRAINT `interessen_vector_alle_ibfk_1` FOREIGN KEY (`id`) REFERENCES `interessen` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints der Tabelle `interessen_vector_ohne_personen`
+--
+ALTER TABLE `interessen_vector_ohne_personen`
+ADD CONSTRAINT `interessen_vector_ohne_personen_ibfk_1` FOREIGN KEY (`id`) REFERENCES `interessen` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints der Tabelle `interessen_vector_personen`
+--
+ALTER TABLE `interessen_vector_personen`
+ADD CONSTRAINT `interessen_vector_personen_ibfk_1` FOREIGN KEY (`id`) REFERENCES `interessen` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints der Tabelle `nutzer_interessen`
 --
 ALTER TABLE `nutzer_interessen`
-ADD CONSTRAINT `nutzer_interessen_ibfk_1` FOREIGN KEY (`id`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE;
+ADD CONSTRAINT `nutzer_interessen_ibfk_1` FOREIGN KEY (`nutzerid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `nutzer_interessen_ibfk_2` FOREIGN KEY (`interessensid`) REFERENCES `interessen` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints der Tabelle `personalisierung`
+-- Constraints der Tabelle `personalisierung_alle`
 --
-ALTER TABLE `personalisierung`
-ADD CONSTRAINT `personalisierung_ibfk_1` FOREIGN KEY (`articleid`) REFERENCES `artikel` (`id`) ON DELETE CASCADE,
-ADD CONSTRAINT `personalisierung_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE;
+ALTER TABLE `personalisierung_alle`
+ADD CONSTRAINT `personalisierung_alle_ibfk_1` FOREIGN KEY (`articleid`) REFERENCES `artikel` (`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `personalisierung_alle_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints der Tabelle `personalisierung_ohne_personen`
+--
+ALTER TABLE `personalisierung_ohne_personen`
+ADD CONSTRAINT `personalisierung_ohne_personen_ibfk_1` FOREIGN KEY (`articleid`) REFERENCES `artikel` (`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `personalisierung_ohne_personen_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints der Tabelle `personalisierung_personen`
+--
+ALTER TABLE `personalisierung_personen`
+ADD CONSTRAINT `personalisierung_personen_ibfk_1` FOREIGN KEY (`articleid`) REFERENCES `artikel` (`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `personalisierung_personen_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `nutzer` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints der Tabelle `vector_alle`
