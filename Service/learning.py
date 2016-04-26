@@ -48,7 +48,7 @@ class Learning:
         userids = Learning.database.getuserids()
         articleids = Learning.database.getarticleidsfordate(Learning.date)
         for userid in userids:
-            print('learning for '+userid)
+            print('learning for '+str(userid))
             results = Learning.learn({}, articleids, userid, ONLY_PERSONS)
             for articleid in results:
                 score = results[articleid]

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import pymysql.cursors
 import sys
-import operator
-#import mysql.connector
 from textblob_de.lemmatizers import PatternParserLemmatizer
 
 ONLY_PERSONS = 0
@@ -85,20 +83,6 @@ class Database:
 
         return results
 
-
-    #@staticmethod
-    #def getuserinterests(person_id):
-    #    information = []
-    #    query = 'Select distinct interesse from nutzer_interessen where id=%s;'
-    #    try:
-    #        with Database.connection.cursor() as cursor:
-    #            cursor.execute(query, person_id)
-    #            for row in cursor:
-    #                information.append(row.get('interesse'))
-    #    except :
-    #        print("Unexpected error:", sys.exc_info()[0])
-    #        raise
-    #    return information
 
 
     @staticmethod
@@ -296,6 +280,22 @@ class Database:
                     tmp_hm['text'] = row.get('text')
 
                     results.append(tmp_hm)
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
+
+    @staticmethod
+    def getannotatedarticletext(articleid):
+        results = []
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT titel, text, ressort FROM annotierte_artikel WHERE id=%s;'
+                cursor.execute(sql, articleid)
+                for row in cursor:
+                    results.append(row.get('titel'))
+                    results.append(row.get('text'))
+                    results.append(row.get('ressort'))
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -569,6 +569,64 @@ class Database:
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
+
+
+    #@staticmethod
+    #def get_score_from_text(tablename, term, artikelid):
+    #    score = 0.0
+#
+#        #sql = 'SELECT id, titel, MATCH(text) AGAINST(%s IN NATURAL LANGUAGE MODE) AS score FROM annotierte_artikel WHERE id=% ;'
+#        sql = 'SELECT id,  MATCH (text) AGAINST (%s IN NATURAL LANGUAGE MODE) AS score ' \
+#                'FROM annotierte_artikel WHERE MATCH (text) AGAINST (%s IN NATURAL LANGUAGE MODE) WHERE id=%s;'
+#        #print(sql,term,tablename,artikelid)
+#        try:
+#            with Database.connection.cursor() as cursor:
+#                cursor.execute(sql, (term, term, artikelid))
+#                for row in cursor:
+#                    score += float(row.get('score'))
+#        except:
+#            pass
+#            #print("Unexpected error in get_score_from_text:", sys.exc_info()[0])
+#            #raise
+#        if score> 0.1:
+#            print(score)
+#        return score
+
+    @staticmethod
+    def getannotations():
+        annotations = []
+        sql = 'SELECT nutzerid, artikelid, bewertung FROM annotationen;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql)
+                for row in cursor:
+                    annotations.append([row.get('nutzerid'),row.get('artikelid'),row.get('bewertung')])
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        return annotations
+
+    @staticmethod
+    def getuserinformations(userid):
+        informations = []
+        sql = 'SELECT age, geschlecht, interessen_kultur, interessen_lokales, interessen_lokalsport, interessen_politik, interessen_sport FROM nutzer where id=%s;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql,userid)
+                for row in cursor:
+                    informations.append(row.get('age'))
+                    informations.append(row.get('geschlecht'))
+                    informations.append(row.get('interessen_kultur'))
+                    informations.append(row.get('interessen_lokales'))
+                    informations.append(row.get('interessen_lokalsport'))
+                    informations.append(row.get('interessen_politik'))
+                    informations.append(row.get('interessen_sport'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        return informations
 
 
 
