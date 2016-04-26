@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 25. Apr 2016 um 14:52
+-- Erstellungszeit: 26. Apr 2016 um 16:14
 -- Server Version: 5.6.21
 -- PHP-Version: 5.6.3
 
@@ -257,13 +257,13 @@ ALTER TABLE `annotationen`
 -- Indizes für die Tabelle `annotierte_artikel`
 --
 ALTER TABLE `annotierte_artikel`
- ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `id` (`id`);
+ ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `id` (`id`), ADD FULLTEXT KEY `titel` (`titel`,`text`), ADD FULLTEXT KEY `text` (`text`);
 
 --
 -- Indizes für die Tabelle `artikel`
 --
 ALTER TABLE `artikel`
- ADD PRIMARY KEY (`id`), ADD KEY `datum` (`datum`);
+ ADD PRIMARY KEY (`id`), ADD KEY `datum` (`datum`), ADD FULLTEXT KEY `titel` (`titel`,`text`), ADD FULLTEXT KEY `text` (`text`);
 
 --
 -- Indizes für die Tabelle `interessen`
