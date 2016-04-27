@@ -418,11 +418,151 @@ class Database:
 
         return interests
 
+    @staticmethod
+    def getinterestvectorforterm(term, mode):
 
+        sql = 'SELECT DISTINCT id FROM interessen WHERE name=%s;'
+        ids = set()
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, term)
+                for row in cursor:
+                    ids.add(row.get('id'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
 
+        vector = {}
+
+        for id in ids:
+            sql = ''
+            if mode == ONLY_PERSONS:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
+            if mode == WITHOUT_PERSONS:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
+            if mode == ALL_ARTICLES:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, id)
+                    counter = 0
+                    for row in cursor:
+                        wikipediaid = row.get('wikipediaid')
+                        score = 0.0 + (row.get('score'))
+                        # step4: multiply each locacl vector by interest score (defined pers user) and add to global vector.
+                        if wikipediaid in vector:
+                            tmp = vector[wikipediaid]
+                            vector[wikipediaid] = tmp + score
+                        else:
+                            vector[wikipediaid] = score
+
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+        return vector;
 
     @staticmethod
-    def getuserinterestvector(personid, mode, updatedscore_hm = {}):
+    def getinterestvectorforid(interestid, mode):
+
+        sql = 'SELECT DISTINCT id FROM interessen WHERE id=%s;'
+        ids = set()
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql, interestid)
+                for row in cursor:
+                    ids.add(row.get('id'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        vector = {}
+
+        for id in ids:
+            sql = ''
+            if mode == ONLY_PERSONS:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
+            if mode == WITHOUT_PERSONS:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
+            if mode == ALL_ARTICLES:
+                sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
+            try:
+                with Database.connection.cursor() as cursor:
+                    cursor.execute(sql, id)
+                    counter = 0
+                    for row in cursor:
+                        wikipediaid = row.get('wikipediaid')
+                        score = 0.0 + (row.get('score'))
+                        # step4: multiply each locacl vector by interest score (defined pers user) and add to global vector.
+                        if wikipediaid in vector:
+                            tmp = vector[wikipediaid]
+                            vector[wikipediaid] = tmp + score
+                        else:
+                            vector[wikipediaid] = score
+
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+        return vector;
+
+   # @staticmethod
+   # def getuserinterestvector(personid, mode, updatedscore_hm={}):
+
+        # step1: Get all interest for a user
+
+        #sql = 'SELECT DISTINCT interessensid, score FROM nutzer_interessen WHERE nutzerid=%s;'
+        #interestsids = {}
+        #try:
+        #    with Database.connection.cursor() as cursor:
+        #        cursor.execute(sql, personid)
+        #        for row in cursor:
+        #            interestsids[row.get('interessensid')] = 0.0 + (row.get('score'))
+        #except:
+        #    print("Unexpected error:", sys.exc_info()[0])
+        #    raise
+        #
+        #vector = {}
+
+        #if len(updatedscore_hm) > 0:
+        #    for i in updatedscore_hm:
+        #        # make sure no new interests are added here
+        #        if i in interestsids:
+        #            interestsids[i] = interestsids[i] + 0, 0
+        #
+        ## step2: Check, if each interest is represented as a vector, if not, create vector for interest
+        ## step3: get for each interest, score (defined for ech user) and vector
+        #for id in interestsids:
+        #    sql = ''
+        #    if mode == ONLY_PERSONS:
+        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
+        #    if mode == WITHOUT_PERSONS:
+        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
+        #    if mode == ALL_ARTICLES:
+        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
+        #    try:
+        #        with Database.connection.cursor() as cursor:
+        #            cursor.execute(sql, id)
+        #            counter = 0
+        #            for row in cursor:
+        #                wikipediaid = row.get('wikipediaid')
+        #                score = 0.0 + (row.get('score'))
+        #                # step4: multiply each locacl vector by interest score (defined pers user) and add to global vector.
+        #                if wikipediaid in vector:
+        #                    tmp = vector[wikipediaid]
+        #                    vector[wikipediaid] = tmp + score * interestsids[id]
+        #                else:
+        #                    vector[wikipediaid] = score * interestsids[id]
+        #                counter += 1
+        #            if counter == 0:
+        #                vector = Database.createinterestvectorandupdatevector(id, vector, mode, interestsids[id])
+        #
+        #    except:
+        #        print("Unexpected error:", sys.exc_info()[0])
+        #        raise
+        ## step5: return "overall interests vector"
+        #return vector;
+
+    @staticmethod
+    def getuserinterestvector(personid, mode):
 
         # step1: Get all interest for a user
 
@@ -439,14 +579,6 @@ class Database:
 
         vector = {}
 
-        if len(updatedscore_hm)>0:
-            for i in updatedscore_hm:
-                #make sure no new interests are added here
-                if i in interestsids:
-                    interestsids[i] = interestsids[i]+0,0
-
-        # step2: Check, if each interest is represented as a vector, if not, create vector for interest
-        # step3: get for each interest, score (defined for ech user) and vector
         for id in interestsids:
             sql = ''
             if mode == ONLY_PERSONS:

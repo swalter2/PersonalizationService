@@ -4,6 +4,7 @@ from webargs import fields
 from webargs.flaskparser import use_args
 from database import Database
 from learning import Learning
+import datetime
 
 
 service = Flask(__name__)
@@ -20,7 +21,7 @@ db = 'wikipedia_new'
 
 
 article_args = {
-    'id': fields.Str(required=True),
+    'personid': fields.Int(required=True),
     'mode': fields.Str(required=False)
 }
 
@@ -31,18 +32,18 @@ user_args = {
 }
 
 score_args = {
-    'personid': fields.Str(required=True),
-    'interestid': fields.Str(required=True),
+    'personid': fields.Int(required=True),
+    'interestname': fields.Str(required=True),
     'score': fields.Str(required=True)
 }
 
 
-#curl http://localhost:5000/service/\?id\=5
+#curl http://localhost:5000/service/\?personid\='1'
 @service.route('/service/', methods=['GET'])
 @use_args(article_args)
 def get_articles_for_id(args):
     database = Database(host, user, password, db)
-    id = int(args['id'])
+    id = int(args['personid'])
     try:
         mode = args['mode']
     except:
@@ -54,12 +55,12 @@ def get_articles_for_id(args):
     return jsonify(result)
 
 
-#curl http://localhost:5000/getinterestscores/\?id\=1
+#curl http://localhost:5000/getinterestscores/\?personid\='1'
 @service.route('/getinterestscores/', methods=['GET'])
 @use_args(article_args)
 def get_scores_for_id(args):
     database = Database(host, user, password, db)
-    id = int(args['id'])
+    id = int(args['personid'])
     result = database.getuserinterests(id)
 
     database.close()
@@ -67,52 +68,49 @@ def get_scores_for_id(args):
     return jsonify(result)
 
 
-#curl http://localhost:5000/getinterestscores/\?id\=1
+#updates a score, but also temporary adds a new interest with score (last one takes longer)
+#curl http://localhost:5000/servicewithupdatedscoretemp/\?personid\='1'\&interestname\='fussball'\&score\='0'
 @service.route('/servicewithupdatedscoretemp/', methods=['GET'])
 @use_args(score_args)
 def update_score_temp(args):
+    today = datetime.datetime.now()
+    date = today.strftime("%d%m%Y")
     database = Database(host, user, password, db)
-    learning = Learning(host, user, password, db)
+    learning = Learning(host, user, password, db, date)
     userid = int(args['personid'])
-    interestid = int(args['interestid'])
+    interestname = args['interestname']
     score = args['score']
     tmp = {}
-    tmp[interestid] = score
+    if ',' in interestname:
+        for x in interestname.split(','):
+            tmp[x] = score
+    else:
+        tmp[interestname] = score
 
     articleids = database.getarticleidswithoutdate()
 
-    results = learning.learn(tmp, articleids, userid, ONLY_PERSONS)
-
-    database.deleteuserinterestvector(userid)
-
-    #for articleid in results:
-    #    score = results[articleid]
-    #    if score > 0.0:
-    #        database.add_personalization_person_userarticle(userid, articleid, score)
-    #print('learned mode 0')
-    #
-    #results = Learning.learn(tmp, articleids, userid, WITHOUT_PERSONS)
-    #for articleid in results:
-    #    score = results[articleid]
-    #    if score > 0.0:
-    #        database.add_personalization_without_person_userarticle(userid, articleid, score)
-    #print('learned mode 1')
-    #
     results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES)
+    preiction = {}
     for articleid in results:
         score = results[articleid]
         if score > 0.0:
-            database.add_personalization_all_userarticle(userid, articleid, score)
+            artikel = database.getarticletext(articleid)
+            artikel_tmp = {}
+            artikel_tmp['id'] = articleid
+            artikel_tmp['score'] = score
+            artikel_tmp['titel'] = artikel[0].get('titel')
+            artikel_tmp['text'] = artikel[0].get('text')
+            preiction[articleid] = artikel_tmp
+    try:
+        learning.close()
+    except:
+        pass
+    try:
+        database.close()
+    except:
+        pass
+    return jsonify(preiction)
 
-    result = database.getpersonalizedarticles(userid)
-
-    learning.close()
-    database.close()
-    return jsonify(result)
-
-
-    #return jsonify({'Works': 'bla'})
-    #return jsonify({})
 
 
 

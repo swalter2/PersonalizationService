@@ -36,7 +36,10 @@ class Learning:
         Learning.connection.close()
 
     def close(self):
-        Learning.connection.close()
+        try:
+            Learning.database.close()
+        except:
+            pass
 
     @staticmethod
     def prediction(cos, user_information, artikel_id):
@@ -79,20 +82,8 @@ class Learning:
 
     # extend to person ID, load from database such things like age etc
     @staticmethod
-    def learn(interests, list_article_ids, userid, mode, updatedscore_hm={}):
-        #information = Learning.database.getuserinterests(userid)
-        interest_vector_user = Learning.database.getuserinterestvector(userid, mode, updatedscore_hm)
-
-        sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
-        reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, VECTOR_SIZE))
-        reduced_sorted_interest_vector_hm = {}
-        for x,y in reduced_sorted_interest_vector:
-            reduced_sorted_interest_vector_hm[x] = y
-
-        #print('size interestvector for person',userid,len(interest_vector),mode)
-        #for i in information:
-        #    interests.append(i)
-
+    def learn(interests, list_article_ids, userid, mode):
+        interest_vector_user = Learning.database.getuserinterestvector(userid, mode)
         if len(interests)>0:
 
             for i in interests:
@@ -100,21 +91,34 @@ class Learning:
                 for term, tag in Learning._lemmatizer.lemmatize(i):
                     interest_input += " "+term
                 interest_input = interest_input.strip()
-
-                tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
-                for wikipediaid in tmp_vector:
-                    if wikipediaid in interest_vector_user:
-                        # in the moment only addition of the scores, maybe also try averaging of the scores
-                        tmp = interest_vector_user[wikipediaid]
-                        interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*interests[i]
-                    else:
-                        interest_vector_user[wikipediaid] = tmp_vector[wikipediaid]*interests[i]
+                tmp_vector = Learning.database.getinterestvectorforterm(interest_input,mode)
+                if len(tmp_vector)==0:
+                    tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
+                    for wikipediaid in tmp_vector:
+                        if wikipediaid in interest_vector_user:
+                            # in the moment only addition of the scores, maybe also try averaging of the scores
+                            tmp = interest_vector_user[wikipediaid]
+                            interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*float(interests[i])
+                        else:
+                            if float(interests[i]) > 0.1:
+                                interest_vector_user[wikipediaid] = (tmp_vector[wikipediaid]+0.0)*float(interests[i])
+                else:
+                    for wikipediaid in tmp_vector:
+                        if wikipediaid in interest_vector_user:
+                            interest_vector_user[wikipediaid] = interest_vector_user[wikipediaid]*float(interests[i])
+                        else:
+                            interest_vector_user[wikipediaid] = tmp_vector[wikipediaid] * float(interests[i])
+        sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
+        reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, VECTOR_SIZE))
+        reduced_sorted_interest_vector_hm = {}
+        for x, y in reduced_sorted_interest_vector:
+            reduced_sorted_interest_vector_hm[x] = y
 
         results = {}
         for article_id in list_article_ids:
             article_vector = {}
             article_vector = Learning.database.getarticlevector(article_id, mode)
-            Learning.article_vector_hm[article_id+str(mode)] = article_vector
+            #Learning.article_vector_hm[article_id+str(mode)] = article_vector
 
             sorted_article_vector = sorted(article_vector.items(), key=operator.itemgetter(1),reverse=True)
             reduced_sorted_article_vector = list(islice(sorted_article_vector, VECTOR_SIZE))
@@ -123,5 +127,6 @@ class Learning:
                 reduced_sorted_article_vector_hm[x] = y
 
             cos = calcualtecos(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
-            results[article_id] = Learning.prediction(cos, interests, article_id)
+            if cos > 0.0:
+                results[article_id] = Learning.prediction(cos, interests, article_id)
         return results
