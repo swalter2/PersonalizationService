@@ -6,6 +6,7 @@ from textblob_de.lemmatizers import PatternParserLemmatizer
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
+VECTOR_SIZE = 100
 
 class Database:
     connection = ''
@@ -25,6 +26,8 @@ class Database:
 
         Database._lemmatizer = PatternParserLemmatizer()
 
+    def close(self):
+        Database.connection.close()
 
     @staticmethod
     def getarticlesfromwikipedia(mode, term, limit=0):

@@ -18,8 +18,6 @@ password = '1234567'
 db = 'wikipedia_new'
 
 
-database = Database(host, user, password, db)
-learning = Learning(host, user, password, db)
 
 article_args = {
     'id': fields.Str(required=True),
@@ -43,6 +41,7 @@ score_args = {
 @service.route('/service/', methods=['GET'])
 @use_args(article_args)
 def get_articles_for_id(args):
+    database = Database(host, user, password, db)
     id = int(args['id'])
     try:
         mode = args['mode']
@@ -50,7 +49,8 @@ def get_articles_for_id(args):
         pass
     result = database.getpersonalizedarticles(id)
 
-    #return jsonify({'Works': 'bla'})
+    database.close()
+
     return jsonify(result)
 
 
@@ -58,17 +58,21 @@ def get_articles_for_id(args):
 @service.route('/getinterestscores/', methods=['GET'])
 @use_args(article_args)
 def get_scores_for_id(args):
+    database = Database(host, user, password, db)
     id = int(args['id'])
     result = database.getuserinterests(id)
 
-    #return jsonify({'Works': 'bla'})
+    database.close()
+
     return jsonify(result)
 
 
 #curl http://localhost:5000/getinterestscores/\?id\=1
-@service.route('/updatescoretemp/', methods=['PUT'])
+@service.route('/servicewithupdatedscoretemp/', methods=['GET'])
 @use_args(score_args)
 def update_score_temp(args):
+    database = Database(host, user, password, db)
+    learning = Learning(host, user, password, db)
     userid = int(args['personid'])
     interestid = int(args['interestid'])
     score = args['score']
@@ -77,28 +81,34 @@ def update_score_temp(args):
 
     articleids = database.getarticleidswithoutdate()
 
-    results = Learning.learn(tmp, articleids, userid, ONLY_PERSONS)
+    results = learning.learn(tmp, articleids, userid, ONLY_PERSONS)
 
     database.deleteuserinterestvector(userid)
 
-    for articleid in results:
-        score = results[articleid]
-        if score > 0.0:
-            Learning.database.add_personalization_person_userarticle(userid, articleid, score)
-    print('learned mode 0')
-
-    results = Learning.learn(tmp, articleids, userid, WITHOUT_PERSONS)
-    for articleid in results:
-        score = results[articleid]
-        if score > 0.0:
-            Learning.database.add_personalization_without_person_userarticle(userid, articleid, score)
-    print('learned mode 1')
-
+    #for articleid in results:
+    #    score = results[articleid]
+    #    if score > 0.0:
+    #        database.add_personalization_person_userarticle(userid, articleid, score)
+    #print('learned mode 0')
+    #
+    #results = Learning.learn(tmp, articleids, userid, WITHOUT_PERSONS)
+    #for articleid in results:
+    #    score = results[articleid]
+    #    if score > 0.0:
+    #        database.add_personalization_without_person_userarticle(userid, articleid, score)
+    #print('learned mode 1')
+    #
     results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES)
     for articleid in results:
         score = results[articleid]
         if score > 0.0:
-            Learning.database.add_personalization_all_userarticle(userid, articleid, score)
+            database.add_personalization_all_userarticle(userid, articleid, score)
+
+    result = database.getpersonalizedarticles(userid)
+
+    learning.close()
+    database.close()
+    return jsonify(result)
 
 
     #return jsonify({'Works': 'bla'})
@@ -107,17 +117,17 @@ def update_score_temp(args):
 
 
 
-#curl http://localhost:5000/getinterestscores/\?id\=1
-@service.route('/adduser/', methods=['GET'])
-@use_args(user_args)
-def add_user(args):
-    name = args['name']
-    vorname = args['name']
-    alter = args['age']
-    result = database.getuserinterests(id)
-
-    #return jsonify({'Works': 'bla'})
-    return jsonify(result)
+##curl http://localhost:5000/getinterestscores/\?id\=1
+#@service.route('/adduser/', methods=['GET'])
+#@use_args(user_args)
+#def add_user(args):
+#    name = args['name']
+#    vorname = args['name']
+#    alter = args['age']
+#    result = database.getuserinterests(id)
+#
+#    #return jsonify({'Works': 'bla'})
+#    return jsonify(result)
 
 
 

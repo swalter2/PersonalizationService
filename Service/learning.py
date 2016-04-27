@@ -8,6 +8,7 @@ from itertools import islice
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
+VECTOR_SIZE = 100
 
 class Learning:
     esa = ''
@@ -34,8 +35,8 @@ class Learning:
     def __exit__(self, exc_type, exc_value, traceback):
         Learning.connection.close()
 
-
-
+    def close(self):
+        Learning.connection.close()
 
     @staticmethod
     def prediction(cos, user_information, artikel_id):
@@ -83,7 +84,7 @@ class Learning:
         interest_vector_user = Learning.database.getuserinterestvector(userid, mode, updatedscore_hm)
 
         sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
-        reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, 100))
+        reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, VECTOR_SIZE))
         reduced_sorted_interest_vector_hm = {}
         for x,y in reduced_sorted_interest_vector:
             reduced_sorted_interest_vector_hm[x] = y
@@ -116,7 +117,7 @@ class Learning:
             Learning.article_vector_hm[article_id+str(mode)] = article_vector
 
             sorted_article_vector = sorted(article_vector.items(), key=operator.itemgetter(1),reverse=True)
-            reduced_sorted_article_vector = list(islice(sorted_article_vector, 100))
+            reduced_sorted_article_vector = list(islice(sorted_article_vector, VECTOR_SIZE))
             reduced_sorted_article_vector_hm = {}
             for x, y in reduced_sorted_article_vector:
                 reduced_sorted_article_vector_hm[x] = y
