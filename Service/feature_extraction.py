@@ -22,6 +22,9 @@ def normalize_article_ressort_to_dict(article_ressort,ressort_list):
             result[ressort] = 0
     return result
 
+
+
+
 #fuer die crossfeatures
 def compute_cross_features(user_age,user_sex,user_education,article_ressort,article_normalized_page,
                            ressort_list,pages_list,age_list,sexes_list,edu_list):
@@ -104,6 +107,34 @@ def compute_cross_features(user_age,user_sex,user_education,article_ressort,arti
                 cf_edu_page[feature] = 0
 
     return cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page
+
+
+def compute_general_feature_dict(user_age,user_sex,user_education,article_ressort,article_normalized_page,
+                           ressort_list,pages_list,age_list,sexes_list,edu_list):
+
+    ressort_prior_dict = normalize_article_ressort_to_dict(article_ressort,ressort_list)
+
+    cf_age_ressort, cf_sex_ressort, cf_edu_ressort, cf_age_page, cf_sex_page, cf_edu_page = compute_cross_features(
+        user_age,user_sex,user_education,article_ressort,article_normalized_page,ressort_list,pages_list,age_list,sexes_list,edu_list
+    )
+    #weitere feature-extraction hier einfügen
+
+    #features in einem Dict zusammenfassen
+    feature_dict = {}
+
+    feature_dict.update(ressort_prior_dict)
+    feature_dict.update(cf_age_ressort)
+    feature_dict.update(cf_sex_ressort)
+    feature_dict.update(cf_edu_ressort)
+    feature_dict.update(cf_age_page)
+    feature_dict.update(cf_sex_page)
+    feature_dict.update(cf_edu_page)
+
+    return feature_dict
+
+
+
+####    AB HIER ESA FEATURES, voerst nicht relevant     ########
 
 #berechne cosinus-vergleich von artikel und user. berechne zusätzlich, ob score besser
 # als der durchschnitt der aktuellen Ausgabe

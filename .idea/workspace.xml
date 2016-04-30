@@ -1,0 +1,886 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a14bd0a3-a532-4b0c-8fb4-053d75c0a00a" name="Default" comment="">
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Service/feature_extractor.py" afterPath="$PROJECT_DIR$/Service/feature_extraction.py" />
+    </list>
+    <ignored path="PersonalizationService.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="PersonalizationService" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="becker.sql" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/becker.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="service.sql" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/service.sql">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-16.666666">
+              <caret line="30" column="11" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="database.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/database.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding>
+                <element signature="e#24#46#0" expanded="true" />
+                <marker date="1462011243000" expanded="true" signature="1294:1458" placeholder="SELECT id, M..." />
+                <marker date="1462011243000" expanded="true" signature="2715:2753" placeholder="Select disti..nutzer..." />
+                <marker date="1462011243000" expanded="true" signature="3150:3189" placeholder="Select disti..artikel..." />
+                <marker date="1462011243000" expanded="true" signature="3604:3648" placeholder="Select disti..artikel..." />
+                <marker date="1462011243000" expanded="true" signature="4069:4100" placeholder="Select disti..artikel..." />
+                <marker date="1462011243000" expanded="true" signature="4663:4739" placeholder="INSERT INTO personalisierung_alle..." />
+                <marker date="1462011243000" expanded="true" signature="5129:5209" placeholder="INSERT INTO personalisierung_personen..." />
+                <marker date="1462011243000" expanded="true" signature="5607:5692" placeholder="INSERT INTO personalisierung_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="6054:6118" placeholder="Select disti..vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="6180:6249" placeholder="Select disti..vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="6308:6368" placeholder="Select disti..vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="6926:6996" placeholder="INSERT INTO artikel..." />
+                <marker date="1462011243000" expanded="true" signature="7337:7401" placeholder="INSERT INTO vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="7888:7956" placeholder="INSERT INTO vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="8452:8525" placeholder="INSERT INTO vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="9101:9270" placeholder="SELECT artic..personalisierung_alle..." />
+                <marker date="1462011243000" expanded="true" signature="9947:9988" placeholder="SELECT titel..artikel..." />
+                <marker date="1462011243000" expanded="true" signature="10603:10664" placeholder="SELECT titel..annotierte_artikel..." />
+                <marker date="1462011243000" expanded="true" signature="11207:11241" placeholder="Select disti..artikel..." />
+                <marker date="1462011243000" expanded="true" signature="11624:11659" placeholder="DELETE FROM ..." />
+                <marker date="1462011243000" expanded="true" signature="12056:12135" placeholder="INSERT INTO interessen_vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="12193:12277" placeholder="INSERT INTO interessen_vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="12332:12407" placeholder="INSERT INTO interessen_vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="13069:13115" placeholder="SELECT DISTI..interessen..." />
+                <marker date="1462011243000" expanded="true" signature="15066:15276" placeholder="SELECT DISTI..nutzer_interessen..." />
+                <marker date="1462011243000" expanded="true" signature="15902:15948" placeholder="SELECT DISTI..interessen..." />
+                <marker date="1462011243000" expanded="true" signature="16381:16457" placeholder="SELECT DISTI..interessen_vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="16525:16606" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="16670:16742" placeholder="SELECT DISTI..interessen_vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="17647:17691" placeholder="SELECT DISTI..interessen..." />
+                <marker date="1462011243000" expanded="true" signature="18130:18206" placeholder="SELECT DISTI..interessen_vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="18274:18355" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="18419:18491" placeholder="SELECT DISTI..interessen_vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="22110:22185" placeholder="SELECT DISTI..nutzer_interessen..." />
+                <marker date="1462011243000" expanded="true" signature="22678:22754" placeholder="SELECT DISTI..interessen_vector_personen..." />
+                <marker date="1462011243000" expanded="true" signature="22822:22903" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+                <marker date="1462011243000" expanded="true" signature="22967:23039" placeholder="SELECT DISTI..interessen_vector_alle..." />
+                <marker date="1462011243000" expanded="true" signature="24284:24331" placeholder="DELETE FROM ..." />
+                <marker date="1462011243000" expanded="true" signature="24610:24661" placeholder="DELETE FROM ..." />
+                <marker date="1462011243000" expanded="true" signature="24941:24998" placeholder="DELETE FROM ..." />
+                <marker date="1462011243000" expanded="true" signature="25299:25340" placeholder="Select disti..interessen..." />
+                <marker date="1462011243000" expanded="true" signature="26155:26192" placeholder="SELECT MAX(i..interessen..." />
+                <marker date="1462011243000" expanded="true" signature="26475:26522" placeholder="INSERT INTO interessen..." />
+                <marker date="1462011243000" expanded="true" signature="27071:27146" placeholder="SELECT nutze..nutzer_interessen..." />
+                <marker date="1462011243000" expanded="true" signature="27427:27505" placeholder="INSERT INTO nutzer_interessen..." />
+                <marker date="1462011243000" expanded="true" signature="28814:28869" placeholder="SELECT nutze..annotationen..." />
+                <marker date="1462011243000" expanded="true" signature="29334:29478" placeholder="SELECT age, ..nutzer..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="general.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/general.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="31" column="16" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="learning.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/learning.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="5" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="feature_extraction.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Service/feature_extraction.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.42613637">
+              <caret line="112" column="81" selection-start-line="112" selection-start-column="81" selection-end-line="112" selection-end-column="81" />
+              <folding>
+                <element signature="e#24#54#0" expanded="true" />
+                <element signature="e#222#425#0" expanded="false" />
+                <element signature="e#541#736#0" expanded="false" />
+                <element signature="e#952#3605#0" expanded="false" />
+                <element signature="e#3802#4556#0" expanded="false" />
+                <element signature="e#4815#5048#0" expanded="false" />
+                <element signature="e#5332#5971#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test2.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/test2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Service/run.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Service/learning.py" />
+        <option value="$PROJECT_DIR$/Service/feature_extractor.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="width" value="638" />
+    <option name="height" value="800" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PersonalizationService" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PersonalizationService" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PersonalizationService" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PersonalizationService" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PersonalizationService" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FullScreen" value="true" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="PersonalizationService" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a14bd0a3-a532-4b0c-8fb4-053d75c0a00a" name="Default" comment="" />
+      <created>1461136950926</created>
+      <option name="number" value="Default" />
+      <updated>1461136950926</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="638" height="800" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32214764" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32893" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Service/becker.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/service.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/database.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#46#0" expanded="true" />
+            <marker date="1462011243000" expanded="true" signature="1294:1458" placeholder="SELECT id, M..." />
+            <marker date="1462011243000" expanded="true" signature="2715:2753" placeholder="Select disti..nutzer..." />
+            <marker date="1462011243000" expanded="true" signature="3150:3189" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="3604:3648" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4069:4100" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4663:4739" placeholder="INSERT INTO personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="5129:5209" placeholder="INSERT INTO personalisierung_personen..." />
+            <marker date="1462011243000" expanded="true" signature="5607:5692" placeholder="INSERT INTO personalisierung_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6054:6118" placeholder="Select disti..vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6180:6249" placeholder="Select disti..vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6308:6368" placeholder="Select disti..vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="6926:6996" placeholder="INSERT INTO artikel..." />
+            <marker date="1462011243000" expanded="true" signature="7337:7401" placeholder="INSERT INTO vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="7888:7956" placeholder="INSERT INTO vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="8452:8525" placeholder="INSERT INTO vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="9101:9270" placeholder="SELECT artic..personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="9947:9988" placeholder="SELECT titel..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="10603:10664" placeholder="SELECT titel..annotierte_artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11207:11241" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11624:11659" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="12056:12135" placeholder="INSERT INTO interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12193:12277" placeholder="INSERT INTO interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12332:12407" placeholder="INSERT INTO interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="13069:13115" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15066:15276" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15902:15948" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="16381:16457" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16525:16606" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16670:16742" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="17647:17691" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="18130:18206" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18274:18355" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18419:18491" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="22110:22185" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="22678:22754" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22822:22903" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22967:23039" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="24284:24331" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24610:24661" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24941:24998" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="25299:25340" placeholder="Select disti..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26155:26192" placeholder="SELECT MAX(i..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26475:26522" placeholder="INSERT INTO interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27071:27146" placeholder="SELECT nutze..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27427:27505" placeholder="INSERT INTO nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="28814:28869" placeholder="SELECT nutze..annotationen..." />
+            <marker date="1462011243000" expanded="true" signature="29334:29478" placeholder="SELECT age, ..nutzer..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/general.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="16" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/learning.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="5" selection-start-line="5" selection-start-column="5" selection-end-line="5" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/feature_extraction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#54#0" expanded="true" />
+            <element signature="e#222#425#0" expanded="false" />
+            <element signature="e#541#736#0" expanded="false" />
+            <element signature="e#952#3605#0" expanded="false" />
+            <element signature="e#3802#4556#0" expanded="false" />
+            <element signature="e#4815#5048#0" expanded="false" />
+            <element signature="e#5332#5971#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/becker.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/service.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/database.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#46#0" expanded="true" />
+            <marker date="1462011243000" expanded="true" signature="1294:1458" placeholder="SELECT id, M..." />
+            <marker date="1462011243000" expanded="true" signature="2715:2753" placeholder="Select disti..nutzer..." />
+            <marker date="1462011243000" expanded="true" signature="3150:3189" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="3604:3648" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4069:4100" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4663:4739" placeholder="INSERT INTO personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="5129:5209" placeholder="INSERT INTO personalisierung_personen..." />
+            <marker date="1462011243000" expanded="true" signature="5607:5692" placeholder="INSERT INTO personalisierung_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6054:6118" placeholder="Select disti..vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6180:6249" placeholder="Select disti..vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6308:6368" placeholder="Select disti..vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="6926:6996" placeholder="INSERT INTO artikel..." />
+            <marker date="1462011243000" expanded="true" signature="7337:7401" placeholder="INSERT INTO vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="7888:7956" placeholder="INSERT INTO vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="8452:8525" placeholder="INSERT INTO vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="9101:9270" placeholder="SELECT artic..personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="9947:9988" placeholder="SELECT titel..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="10603:10664" placeholder="SELECT titel..annotierte_artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11207:11241" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11624:11659" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="12056:12135" placeholder="INSERT INTO interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12193:12277" placeholder="INSERT INTO interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12332:12407" placeholder="INSERT INTO interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="13069:13115" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15066:15276" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15902:15948" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="16381:16457" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16525:16606" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16670:16742" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="17647:17691" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="18130:18206" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18274:18355" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18419:18491" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="22110:22185" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="22678:22754" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22822:22903" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22967:23039" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="24284:24331" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24610:24661" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24941:24998" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="25299:25340" placeholder="Select disti..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26155:26192" placeholder="SELECT MAX(i..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26475:26522" placeholder="INSERT INTO interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27071:27146" placeholder="SELECT nutze..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27427:27505" placeholder="INSERT INTO nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="28814:28869" placeholder="SELECT nutze..annotationen..." />
+            <marker date="1462011243000" expanded="true" signature="29334:29478" placeholder="SELECT age, ..nutzer..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/general.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/learning.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Systemarchitecktur_NW-Service.jpeg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/becker.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/list_german_persons.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.33333334">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/general.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="16" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/test2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/resources/germanST.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/resources/1000_annotated_article_vectors.p">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/service.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.666666">
+          <caret line="30" column="11" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/learning.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="5" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/database.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#46#0" expanded="true" />
+            <marker date="1462011243000" expanded="true" signature="1294:1458" placeholder="SELECT id, M..." />
+            <marker date="1462011243000" expanded="true" signature="2715:2753" placeholder="Select disti..nutzer..." />
+            <marker date="1462011243000" expanded="true" signature="3150:3189" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="3604:3648" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4069:4100" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="4663:4739" placeholder="INSERT INTO personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="5129:5209" placeholder="INSERT INTO personalisierung_personen..." />
+            <marker date="1462011243000" expanded="true" signature="5607:5692" placeholder="INSERT INTO personalisierung_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6054:6118" placeholder="Select disti..vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6180:6249" placeholder="Select disti..vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="6308:6368" placeholder="Select disti..vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="6926:6996" placeholder="INSERT INTO artikel..." />
+            <marker date="1462011243000" expanded="true" signature="7337:7401" placeholder="INSERT INTO vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="7888:7956" placeholder="INSERT INTO vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="8452:8525" placeholder="INSERT INTO vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="9101:9270" placeholder="SELECT artic..personalisierung_alle..." />
+            <marker date="1462011243000" expanded="true" signature="9947:9988" placeholder="SELECT titel..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="10603:10664" placeholder="SELECT titel..annotierte_artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11207:11241" placeholder="Select disti..artikel..." />
+            <marker date="1462011243000" expanded="true" signature="11624:11659" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="12056:12135" placeholder="INSERT INTO interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12193:12277" placeholder="INSERT INTO interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="12332:12407" placeholder="INSERT INTO interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="13069:13115" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15066:15276" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="15902:15948" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="16381:16457" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16525:16606" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="16670:16742" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="17647:17691" placeholder="SELECT DISTI..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="18130:18206" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18274:18355" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="18419:18491" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="22110:22185" placeholder="SELECT DISTI..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="22678:22754" placeholder="SELECT DISTI..interessen_vector_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22822:22903" placeholder="SELECT DISTI..interessen_vector_ohne_personen..." />
+            <marker date="1462011243000" expanded="true" signature="22967:23039" placeholder="SELECT DISTI..interessen_vector_alle..." />
+            <marker date="1462011243000" expanded="true" signature="24284:24331" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24610:24661" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="24941:24998" placeholder="DELETE FROM ..." />
+            <marker date="1462011243000" expanded="true" signature="25299:25340" placeholder="Select disti..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26155:26192" placeholder="SELECT MAX(i..interessen..." />
+            <marker date="1462011243000" expanded="true" signature="26475:26522" placeholder="INSERT INTO interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27071:27146" placeholder="SELECT nutze..nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="27427:27505" placeholder="INSERT INTO nutzer_interessen..." />
+            <marker date="1462011243000" expanded="true" signature="28814:28869" placeholder="SELECT nutze..annotationen..." />
+            <marker date="1462011243000" expanded="true" signature="29334:29478" placeholder="SELECT age, ..nutzer..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Service/feature_extraction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.42613637">
+          <caret line="112" column="81" selection-start-line="112" selection-start-column="81" selection-end-line="112" selection-end-column="81" />
+          <folding>
+            <element signature="e#24#54#0" expanded="true" />
+            <element signature="e#222#425#0" expanded="false" />
+            <element signature="e#541#736#0" expanded="false" />
+            <element signature="e#952#3605#0" expanded="false" />
+            <element signature="e#3802#4556#0" expanded="false" />
+            <element signature="e#4815#5048#0" expanded="false" />
+            <element signature="e#5332#5971#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
