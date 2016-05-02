@@ -22,6 +22,35 @@ def normalize_article_ressort_to_dict(article_ressort,ressort_list):
             result[ressort] = 0
     return result
 
+#User X findet Ressort Y gut und Artikel Z ist aus Ressort Y
+def user_specific_ressort_ratings(ressort_ratings_user, ressort_artikel, threshold = 3):
+    result = {}
+
+    for key in ressort_ratings_user:
+        dict_key = "ressort_specific_%s" % key
+        if key == ressort_artikel and ressort_ratings_user[key] >= threshold:
+            result[dict_key] = 1
+        else:
+            result[dict_key] = 0
+
+    return result
+
+#User X findet Ressort Y mit Wertung Z gut und Artikel ist aus Ressort Y
+def user_specific_ressort_explicit_ratings(ressort_ratings_user,ressort_artikel):
+    result = {}
+
+    for ressort in ressort_ratings_user.keys():
+        feature_name = 'user_specific_ressort_rating_' + ressort +'_'
+        for j in range(1,6):
+            feature_name += '%d' % j
+            if ressort_ratings_user[ressort] == j and ressort_artikel == ressort:
+                result[feature_name] = 1
+            else:
+                result[feature_name] = 0
+
+    return result
+
+
 #normalisiert seiten auf die von philipp recherchierten bereiche
 def normalize_pages(self):
     dict = {'1':0,'2':0,'3':0,'4-5':0,'6-7':0,'8':0,'9-16':0,'17-24':0,'25+':0}
@@ -168,6 +197,7 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
         user_education = False
 
         user_annotations = []
+        user_ressort_ratings = {}
 
         for article, annotation in user_annotations:
             #Todo: aus Datenbank holen
@@ -176,6 +206,9 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
 
 
             ressort_prior_dict = normalize_article_ressort_to_dict(article_ressort,ressort_list)
+            ressort_user_specific_dict = user_specific_ressort_ratings(user_ressort_ratings,article_ressort)
+            ressort_user_specific_explicit_rating_dict = user_specific_ressort_explicit_ratings(user_ressort_ratings,article_ressort)
+
 
             cf_age_ressort, cf_sex_ressort, cf_edu_ressort, cf_age_page, cf_sex_page, cf_edu_page = compute_cross_features(
                 user_age,user_sex,user_education,article_ressort,article_normalized_page,ressort_list,pages_list,age_list,sexes_list,edu_list
@@ -194,6 +227,8 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
             feature_dict = {}
 
             feature_dict.update(ressort_prior_dict)
+            feature_dict.update(ressort_user_specific_dict)
+            feature_dict.update(ressort_user_specific_explicit_rating_dict)
             feature_dict.update(cf_age_ressort)
             feature_dict.update(cf_sex_ressort)
             feature_dict.update(cf_edu_ressort)
@@ -202,6 +237,7 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
             feature_dict.update(cf_edu_page)
             feature_dict.update(annotation_comparison_dict)
 
+            #dict zum feature-vektor hinzufügen
             feature_vector.append(feature_dict)
 
     return feature_vector
