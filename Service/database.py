@@ -6,7 +6,7 @@ from textblob_de.lemmatizers import PatternParserLemmatizer
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
-VECTOR_SIZE = 100
+VECTOR_SIZE = 500
 
 class Database:
     connection = ''
@@ -210,8 +210,8 @@ class Database:
     def storearticle(article):
         try:
             with Database.connection.cursor() as cursor:
-                sql = "INSERT INTO artikel (id,titel,text,tags,datum) VALUES (%s,%s,%s,%s,%s);"
-                cursor.execute(sql, (article.id, article.titel, article.text, article.tags, article.datum))
+                sql = "INSERT INTO artikel (id,titel,text,tags,datum, ressort, seite, anzahl_woerter) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
+                cursor.execute(sql, (article.id, article.titel, article.text, article.tags, article.datum, article.ressort, article.seite, article.anzahl_woerter))
                 Database.connection.commit()
                 for wikipediaid in article.vector_alle:
                     try:
@@ -289,20 +289,41 @@ class Database:
         return results
 
     @staticmethod
-    def getannotatedarticletext(articleid):
+    def getannotatedarticleinformations(articleid):
         results = []
         try:
             with Database.connection.cursor() as cursor:
-                sql = 'SELECT titel, text, ressort FROM annotierte_artikel WHERE id=%s;'
+                sql = 'SELECT titel, text, ressort, seite, anzahl_woerter FROM annotierte_artikel WHERE id=%s;'
                 cursor.execute(sql, articleid)
                 for row in cursor:
                     results.append(row.get('titel'))
                     results.append(row.get('text'))
                     results.append(row.get('ressort'))
+                    results.append(row.get('seite'))
+                    results.append(row.get('anzahl_woerter'))
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
         return results
+
+    @staticmethod
+    def getarticleinformations(articleid):
+        results = []
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT titel, text, ressort, seite, anzahl_woerter FROM artikel WHERE id=%s;'
+                cursor.execute(sql, articleid)
+                for row in cursor:
+                    results.append(row.get('titel'))
+                    results.append(row.get('text'))
+                    results.append(row.get('ressort'))
+                    results.append(row.get('seite'))
+                    results.append(row.get('anzahl_woerter'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
+
 
     @staticmethod
     def checkanddeletearticleexceptdate(date):
@@ -504,62 +525,7 @@ class Database:
                 raise
         return vector;
 
-   # @staticmethod
-   # def getuserinterestvector(personid, mode, updatedscore_hm={}):
 
-        # step1: Get all interest for a user
-
-        #sql = 'SELECT DISTINCT interessensid, score FROM nutzer_interessen WHERE nutzerid=%s;'
-        #interestsids = {}
-        #try:
-        #    with Database.connection.cursor() as cursor:
-        #        cursor.execute(sql, personid)
-        #        for row in cursor:
-        #            interestsids[row.get('interessensid')] = 0.0 + (row.get('score'))
-        #except:
-        #    print("Unexpected error:", sys.exc_info()[0])
-        #    raise
-        #
-        #vector = {}
-
-        #if len(updatedscore_hm) > 0:
-        #    for i in updatedscore_hm:
-        #        # make sure no new interests are added here
-        #        if i in interestsids:
-        #            interestsids[i] = interestsids[i] + 0, 0
-        #
-        ## step2: Check, if each interest is represented as a vector, if not, create vector for interest
-        ## step3: get for each interest, score (defined for ech user) and vector
-        #for id in interestsids:
-        #    sql = ''
-        #    if mode == ONLY_PERSONS:
-        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_personen WHERE id=%s;'
-        #    if mode == WITHOUT_PERSONS:
-        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_ohne_personen WHERE id=%s'
-        #    if mode == ALL_ARTICLES:
-        #        sql = 'SELECT DISTINCT wikipediaid, score FROM interessen_vector_alle WHERE id=%s'
-        #    try:
-        #        with Database.connection.cursor() as cursor:
-        #            cursor.execute(sql, id)
-        #            counter = 0
-        #            for row in cursor:
-        #                wikipediaid = row.get('wikipediaid')
-        #                score = 0.0 + (row.get('score'))
-        #                # step4: multiply each locacl vector by interest score (defined pers user) and add to global vector.
-        #                if wikipediaid in vector:
-        #                    tmp = vector[wikipediaid]
-        #                    vector[wikipediaid] = tmp + score * interestsids[id]
-        #                else:
-        #                    vector[wikipediaid] = score * interestsids[id]
-        #                counter += 1
-        #            if counter == 0:
-        #                vector = Database.createinterestvectorandupdatevector(id, vector, mode, interestsids[id])
-        #
-        #    except:
-        #        print("Unexpected error:", sys.exc_info()[0])
-        #        raise
-        ## step5: return "overall interests vector"
-        #return vector;
 
     @staticmethod
     def getuserinterestvector(personid, mode):
@@ -706,27 +672,6 @@ class Database:
                 raise
 
 
-    #@staticmethod
-    #def get_score_from_text(tablename, term, artikelid):
-    #    score = 0.0
-#
-#        #sql = 'SELECT id, titel, MATCH(text) AGAINST(%s IN NATURAL LANGUAGE MODE) AS score FROM annotierte_artikel WHERE id=% ;'
-#        sql = 'SELECT id,  MATCH (text) AGAINST (%s IN NATURAL LANGUAGE MODE) AS score ' \
-#                'FROM annotierte_artikel WHERE MATCH (text) AGAINST (%s IN NATURAL LANGUAGE MODE) WHERE id=%s;'
-#        #print(sql,term,tablename,artikelid)
-#        try:
-#            with Database.connection.cursor() as cursor:
-#                cursor.execute(sql, (term, term, artikelid))
-#                for row in cursor:
-#                    score += float(row.get('score'))
-#        except:
-#            pass
-#            #print("Unexpected error in get_score_from_text:", sys.exc_info()[0])
-#            #raise
-#        if score> 0.1:
-#            print(score)
-#        return score
-
     @staticmethod
     def getannotations():
         annotations = []
@@ -745,13 +690,14 @@ class Database:
     @staticmethod
     def getuserinformations(userid):
         informations = []
-        sql = 'SELECT age, geschlecht, interessen_kultur, interessen_lokales, interessen_lokalsport, interessen_politik, interessen_sport FROM nutzer where id=%s;'
+        sql = 'SELECT age, geschlecht, abschluss, interessen_kultur, interessen_lokales, interessen_lokalsport, interessen_politik, interessen_sport FROM nutzer where id=%s;'
         try:
             with Database.connection.cursor() as cursor:
                 cursor.execute(sql,userid)
                 for row in cursor:
                     informations.append(row.get('age'))
                     informations.append(row.get('geschlecht'))
+                    informations.append(row.get('abschluss'))
                     informations.append(row.get('interessen_kultur'))
                     informations.append(row.get('interessen_lokales'))
                     informations.append(row.get('interessen_lokalsport'))
@@ -762,6 +708,45 @@ class Database:
             raise
 
         return informations
+
+    @staticmethod
+    def get_ressort_list():
+        ressorts = set()
+        sql = 'SELECT DISTINCT ressort FROM artikel;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql)
+                for row in cursor:
+                    ressorts.add(row.get('ressort'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        sql = 'SELECT DISTINCT ressort FROM annotierte_artikel;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql)
+                for row in cursor:
+                    ressorts.add(row.get('ressort'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        return ressorts
+
+    @staticmethod
+    def get_age_list():
+        ages = set()
+        sql = 'SELECT DISTINCT age FROM nutzer;'
+        try:
+            with Database.connection.cursor() as cursor:
+                cursor.execute(sql)
+                for row in cursor:
+                    ages.add(row.get('age'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+        return ages
 
 
 

@@ -23,7 +23,7 @@ class XMLImporter:
     @staticmethod
     def read_xml_file(file):
 
-        results = []
+        #results = []
         processed_pdf = set()
         tree = ET.parse(file)
         for artikel in tree.iter(tag='artikel'):
@@ -88,18 +88,29 @@ class XMLImporter:
                 tags = tags.strip()
                 #ignore articles without noun/adjective content
                 if len(tags) > 2 and " " in tags:
+                    # new_article = Artikel(artikel_id, artikel_text,
+                    #                   tags,
+                    #                   artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
+                    #                   artikel_seite_start, artikel_abbildung, artikel_rubrik,
+                    #                   artikel_ressort, artikel_titel, XMLImporter.getvector(tags, ALL_ARTICLES),
+                    #                       XMLImporter.getvector(tags, ONLY_PERSONS),
+                    #                       XMLImporter.getvector(tags, WITHOUT_PERSONS),
+                    #                       len(artikel_text.split(" ")))
                     new_article = Artikel(artikel_id, artikel_text,
-                                      tags,
-                                      artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
-                                      artikel_seite_start, artikel_abbildung, artikel_rubrik,
-                                      artikel_ressort, artikel_titel, XMLImporter.getvector(tags, ALL_ARTICLES), XMLImporter.getvector(tags, ONLY_PERSONS), XMLImporter.getvector(tags, WITHOUT_PERSONS))
+                                          tags,
+                                          artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
+                                          artikel_seite_start, artikel_abbildung, artikel_rubrik,
+                                          artikel_ressort, artikel_titel, XMLImporter.getvector(tags, ALL_ARTICLES),
+                                          {},
+                                          {},
+                                          len(artikel_text.split(" ")))
                     XMLImporter.database.storearticle(new_article)
                     XMLImporter.text_hm.add(artikel_text)
                     print("stored: "+new_article.titel)
-                    results.append(new_article)
+                    #results.append(new_article)
                     processed_pdf.add(artikel_id)
 
-        return results
+        #return results
 
 
     @staticmethod
@@ -135,7 +146,7 @@ class Artikel:
 
     def __init__(self, artikel_id, artikel_text,tags, artikel_lieferant_id, artikel_quelle_id, artikel_name, artikel_datum,
                  artikel_seite_start, artikel_abbildung, artikel_rubrik, artikel_ressort,
-                 artikel_titel, artikel_vector_alle, artikel_vector_personen, artikel_vector_ohne_personen):
+                 artikel_titel, artikel_vector_alle, artikel_vector_personen, artikel_vector_ohne_personen,artikel_anzahl_woerter):
         self.id = artikel_id.replace('article_pdf_', '').replace('.pdf', '')
         self.text = artikel_text
         self.tags = tags
@@ -151,6 +162,7 @@ class Artikel:
         self.vector_alle = artikel_vector_alle
         self.vector_personen = artikel_vector_personen
         self.vector_ohne_personen = artikel_vector_ohne_personen
+        self.anzahl_woerter = artikel_anzahl_woerter
 
 
 

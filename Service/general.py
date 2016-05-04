@@ -22,31 +22,31 @@ def calcualtecos(vector1, vector2):
     #step1: create vector with all items in it
     vec1 = {}
     vec2 = {}
-    for item in vector1:
-        vec1[item] = 0.0
-        vec2[item] = 0.0
-    for item in vector2:
-        vec1[item] = 0.0
-        vec2[item] = 0.0
-     #step2: fill vectors with actual values
-    for item in vector1:
-        vec1[item] = vector1[item]
-    for item in vector2:
-        vec2[item] = vector2[item]
+    # for item in vector1:
+    #     vec1[item] = 0.0
+    #     vec2[item] = 0.0
+    # for item in vector2:
+    #     vec1[item] = 0.0
+    #     vec2[item] = 0.0
+    #  #step2: fill vectors with actual values
+    # for item in vector1:
+    #     vec1[item] = vector1[item]
+    # for item in vector2:
+    #     vec2[item] = vector2[item]
 
     #only take the intersection between both vectors
-    #for item in vector1:
-    #    if item in vector2:
-    #        vec1[item] = 0.0
-    #        vec2[item] = 0.0
-    #if len(vec1) == 0 or len(vec2) == 0:
-    #    return 0.0
+    for item in vector1:
+        if item in vector2:
+            vec1[item] = 0.0
+            vec2[item] = 0.0
+    if len(vec1) == 0 or len(vec2) == 0:
+        return 0.0
 #
     #step2: fill vectors with actual values
-    #for item in vec1:
-    #    vec1[item] = vector1[item]
-    #for item in vec2:
-    #    vec2[item] = vector2[item]
+    for item in vec1:
+        vec1[item] = vector1[item]
+    for item in vec2:
+        vec2[item] = vector2[item]
 
     #step3: calculate scalar
     scalar = 0.0

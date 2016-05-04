@@ -5,7 +5,7 @@ from webargs.flaskparser import use_args
 from database import Database
 from learning import Learning
 import datetime
-
+from feature import *
 
 service = Flask(__name__)
 
@@ -18,6 +18,10 @@ user = 'wikipedia_new'
 password = '1234567'
 db = 'wikipedia_new'
 
+
+#tmp_database = Database(host, user, password, db)
+#train(tmp_database)
+#tmp_database.close()
 
 
 article_args = {
@@ -78,6 +82,8 @@ def update_score_temp(args):
     database = Database(host, user, password, db)
     learning = Learning(host, user, password, db, date)
     userid = int(args['personid'])
+    user_information =  Learning.database.getuserinformations(userid)
+
     interestname = args['interestname']
     score = args['score']
     tmp = {}
@@ -88,9 +94,12 @@ def update_score_temp(args):
         tmp[interestname] = score
 
     articleids = database.getarticleidswithoutdate()
+    article_informations = {}
+    for id in articleids:
+        article_informations[id] = Learning.database.getarticleinformations(id)
 
-    results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES)
-    preiction = {}
+    results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
+    prediction = {}
     for articleid in results:
         score = results[articleid]
         if score > 0.0:
@@ -100,7 +109,7 @@ def update_score_temp(args):
             artikel_tmp['score'] = score
             artikel_tmp['titel'] = artikel[0].get('titel')
             artikel_tmp['text'] = artikel[0].get('text')
-            preiction[articleid] = artikel_tmp
+            prediction[articleid] = artikel_tmp
     try:
         learning.close()
     except:
@@ -109,7 +118,7 @@ def update_score_temp(args):
         database.close()
     except:
         pass
-    return jsonify(preiction)
+    return jsonify(prediction)
 
 
 

@@ -159,32 +159,32 @@ def compute_cross_features(user_age,user_sex,user_education,article_ressort,arti
 
     return cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page
 
-def compute_annotation_esa_comparison(article, user_annotations, mode='pos'):
-
-    cos_sims = []
-
-    user_annotations = []
-
-    for article,annotation in user_annotations:
-        if mode == 'pos':
-            if annotation == 4:
-                #Todo: esa_vectors für die zwei Artikel aus DB
-                esa_vec_current_article = []
-                esa_vec_article = []
-                cos_sim = general.calcualtecos(esa_vec_current_article,esa_vec_article)
-                cos_sims.append(cos_sim)
-
-        #nur negativ bewertete artikel nutzen
-        elif mode == 'neg':
-            if annotation == 1:
-                #Todo: esa_vectors für die zwei Artikel aus DB
-                esa_vec_current_article = []
-                esa_vec_article = []
-                cos_sim = general.calcualtecos(esa_vec_current_article,esa_vec_article)
-                cos_sims.append(cos_sim)
-
-
-    return np.min(cos_sims),np.max(cos_sims),np.mean(cos_sims)
+# def compute_annotation_esa_comparison(article, user_annotations, mode='pos'):
+#
+#     cos_sims = []
+#
+#     user_annotations = []
+#
+#     for article,annotation in user_annotations:
+#         if mode == 'pos':
+#             if annotation == 4:
+#                 #Todo: esa_vectors für die zwei Artikel aus DB
+#                 esa_vec_current_article = []
+#                 esa_vec_article = []
+#                 cos_sim = general.calcualtecos(esa_vec_current_article,esa_vec_article)
+#                 cos_sims.append(cos_sim)
+#
+#         #nur negativ bewertete artikel nutzen
+#         elif mode == 'neg':
+#             if annotation == 1:
+#                 #Todo: esa_vectors für die zwei Artikel aus DB
+#                 esa_vec_current_article = []
+#                 esa_vec_article = []
+#                 cos_sim = general.calcualtecos(esa_vec_current_article,esa_vec_article)
+#                 cos_sims.append(cos_sim)
+#
+#
+#     return np.min(cos_sims),np.max(cos_sims),np.mean(cos_sims)
 
 def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sexes_list,edu_list):
 
@@ -226,6 +226,7 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
             #features in einem Dict zusammenfassen
             feature_dict = {}
 
+
             feature_dict.update(ressort_prior_dict)
             feature_dict.update(ressort_user_specific_dict)
             feature_dict.update(ressort_user_specific_explicit_rating_dict)
@@ -244,43 +245,43 @@ def compute_general_feature_dict(user_list, ressort_list,pages_list,age_list,sex
 
 
 
-####    AB HIER ESA FEATURES, voerst nicht relevant, da vom Service selbst schon implementiert     ########
-
-#berechne cosinus-vergleich von artikel und user. berechne zusätzlich, ob score besser
-# als der durchschnitt der aktuellen Ausgabe
-def esa_comparison_interests_article(user, article):
-    esa_score_dict, avg_result = compute_cosine_sim_current_issue_for_user(user)
-
-    better_than_avg = False
-    if esa_score_dict[article] > avg_result:
-        better_than_avg = True
-
-    return esa_score_dict[article],better_than_avg
-
-
-#berechnet dict mit esa-scores für alle artikel einer Ausgabe bezogen auf einen user
-#normalisiert diese scores durch den besten Score der ausgabe. Gibt
-#außerdem den durchschnittlichen score der normalisierten Liste zurück
-def compute_cosine_sim_current_issue_for_user(user):
-    result = {}
-    #TODO: esa_vektoren für artikel und user bereitstellen
-    esa_vec_user = False
-
-    #TODO: liste aller artikel der aktuellen ausgabe bereitstellen
-    list_of_articles_in_current_issue = []
-
-    for article in list_of_articles_in_current_issue:
-        esa_vec_article = False
-        result[article] = general.calcualtecos(esa_vec_user,esa_vec_article)
-
-    max_score_current_issue_x_user = np.max(result.values())
-
-    for article in result.keys():
-        result[article] /= max_score_current_issue_x_user
-
-    avg_score_current_issue_x_user = np.mean(result.values())
-
-    return result, avg_score_current_issue_x_user
+# ####    AB HIER ESA FEATURES, voerst nicht relevant, da vom Service selbst schon implementiert     ########
+#
+# #berechne cosinus-vergleich von artikel und user. berechne zusätzlich, ob score besser
+# # als der durchschnitt der aktuellen Ausgabe
+# def esa_comparison_interests_article(user, article):
+#     esa_score_dict, avg_result = compute_cosine_sim_current_issue_for_user(user)
+#
+#     better_than_avg = False
+#     if esa_score_dict[article] > avg_result:
+#         better_than_avg = True
+#
+#     return esa_score_dict[article],better_than_avg
+#
+#
+# #berechnet dict mit esa-scores für alle artikel einer Ausgabe bezogen auf einen user
+# #normalisiert diese scores durch den besten Score der ausgabe. Gibt
+# #außerdem den durchschnittlichen score der normalisierten Liste zurück
+# def compute_cosine_sim_current_issue_for_user(user):
+#     result = {}
+#     #TODO: esa_vektoren für artikel und user bereitstellen
+#     esa_vec_user = False
+#
+#     #TODO: liste aller artikel der aktuellen ausgabe bereitstellen
+#     list_of_articles_in_current_issue = []
+#
+#     for article in list_of_articles_in_current_issue:
+#         esa_vec_article = False
+#         result[article] = general.calcualtecos(esa_vec_user,esa_vec_article)
+#
+#     max_score_current_issue_x_user = np.max(result.values())
+#
+#     for article in result.keys():
+#         result[article] /= max_score_current_issue_x_user
+#
+#     avg_score_current_issue_x_user = np.mean(result.values())
+#
+#     return result, avg_score_current_issue_x_user
 
 
 
