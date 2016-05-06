@@ -3,6 +3,26 @@ from nltk import word_tokenize
 import general
 import numpy as np
 
+#mappt alle aktuellen NW-Ressorts auf die 5 Ressorts aus dem Experiment
+def ressort_mapping(ressort):
+    result = ''
+
+    if ressort in ['Gütersloh','Bünde','Warburg','Herford','Löhne','Lübbecke','Höxter','Paderborn',
+                   'Enger-Spenge','Bad Oeynhausen','Bielefeld','Schloss Holte', 'Beilagen']:
+        result = 'Bielefeld'
+    elif ressort in ['Sport Herford','Sport Bielefeld','Sport Bad Oeynhausen','Sport Paderborn','Sport Bünde',
+                     'Sport Lübbecke','Sport Schloß Holte','Sport Höxter','Sport Gütersloh']:
+        result = 'Sport Bielefeld'
+    elif ressort == 'Kultur':
+        result = 'Kultur'
+    elif result == 'Politik':
+        result = 'Politik'
+    elif result == 'Sport_Bund':
+        result = 'Sport_Bund'
+
+    return ressort
+
+
 #fuer vergleich von interessen mit titel oder text
 def compare_string_to_interests(string,interest_list, mode = 'prior_title'):
     result = {}
