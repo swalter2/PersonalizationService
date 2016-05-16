@@ -57,9 +57,31 @@ class Learning:
     @staticmethod
     def prediction(cos, user, article):
         feature = {}
-        feature.update(normalize_article_ressort_to_dict(article[2], Learning.ressort_list))
+        #ressort-prior-feature
+        feature.update(normalize_article_ressort_to_dict(ressort_mapping(article[2]), Learning.ressort_list))
+        #page prior feature
         feature.update(normalize_pages(article[3]))
+        #prior-infos about user
         feature.update(user_information_vector(user))
+        #user-spezific comparison of interests with text and title
+        user_interest_list = []
+        for interest_id in user[8].keys(): #erstelle Liste der User-Interessen für den Vergleich mit Text
+            user_interest_list.append(user[8][interest_id]['name'])
+        feature.update(compare_string_to_interests(article[0] + " " + article[1], user_interest_list, mode='user_specific_titel_and_text'))
+        #cross-feature with ressort and normalized page
+        cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page\
+            = compute_cross_features(user[0],user[1],user[2],article[3])
+
+        feature.update(cf_age_ressort)
+        feature.update(cf_sex_ressort)
+        feature.update(cf_edu_ressort)
+        feature.update(cf_age_page)
+        feature.update(cf_sex_page)
+        feature.update(cf_edu_page)
+
+        #todo specific ressort rating feature  (dafür sind die ressort_ratings der user nötig!)
+        #todo specific ressort rating mit explizitem rating
+
         vec = DictVectorizer()
         value = 0
         try:
@@ -89,7 +111,8 @@ class Learning:
 
         user_informations = {}
         for id in userids:
-            user_informations[id] = Learning.database.getuserinformations(id)
+            user_informations[id] = Learning.database.getuserinformations(id) #die userinformations die von der DB kommen sind eine Liste
+            user_informations[id].append(Learning.database.getuserinterests(id)) #die interessen sind als dict gespeichert
 
         article_informations = {}
         for id in articleids:

@@ -7,6 +7,13 @@ import numpy as np
 import pickle
 import sys
 
+#listen nötig für cross-feature-berechnungen
+RESSORTS = ['Bielefeld','Kultur','Sport Bielefeld','Politik','Sport_Bund']
+NORMALIZED_PAGES = ['1','2','3','4-5','6-7','8','9-16','17-24','25+']
+NORMALIZED_AGES = ['bis30','30-35','35-40','40-45','45-50','50-60','60-70','groeßer70']
+SEXES = ['m','f']
+EDUCATIONS = ['Mittlere Reife','Hochschulabschluss','Abitur','Sonstiges']
+
 #normalisiert seiten auf die von philipp recherchierten bereiche
 def normalize_pages(page):
     dict = {'1':0,'2':0,'3':0,'4-5':0,'6-7':0,'8':0,'9-16':0,'17-24':0,'25+':0}
@@ -29,7 +36,6 @@ def normalize_pages(page):
     else:
         dict['25+'] = 1
     return dict
-
 
 def normalize_age(age):
     feature = {}
@@ -127,11 +133,14 @@ def user_information_vector(user):
         result['gender_m'] = 0
         result['gender_f'] = 1
 
+
+
     result['Mittlere Reife'] = 0
     result['Hochschulabschluss'] = 0
     result['Abitur'] = 0
     result['Sonstiges'] = 0
     result[user[2]] = 1
+
     result.update(normalize_age(user[0]))
 
 
@@ -245,7 +254,117 @@ def train(database):
     print(scores)
     print(value/len(scores))
 
+def ressort_mapping(ressort):
+    result = ''
 
+    if ressort in ['Gütersloh','Bünde','Warburg','Herford','Löhne','Lübbecke','Höxter','Paderborn',
+                   'Enger-Spenge','Bad Oeynhausen','Bielefeld','Schloss Holte', 'Beilagen']:
+        result = 'Bielefeld'
+    elif ressort in ['Sport Herford','Sport Bielefeld','Sport Bad Oeynhausen','Sport Paderborn','Sport Bünde',
+                     'Sport Lübbecke','Sport Schloß Holte','Sport Höxter','Sport Gütersloh']:
+        result = 'Sport Bielefeld'
+    elif ressort == 'Kultur':
+        result = 'Kultur'
+    elif result == 'Politik':
+        result = 'Politik'
+    elif result == 'Sport_Bund':
+        result = 'Sport_Bund'
+
+    return result
+
+#fuer vergleich von interessen mit titel oder text
+def compare_string_to_interests(string,interest_list, mode = 'prior_title'):
+    result = {}
+    for interest in interest_list:
+        #todo hier besser splitten als mit space
+        for word in string.split():
+            if interest.lower() in word.lower():
+                result[mode + '_interest'] = 1
+    return result
+
+#fuer die crossfeatures mit ressort und page_normalized
+def compute_cross_features(user_age, user_sex, user_education, article_page, article_ressort):
+
+    cf_age_ressort = {}
+    cf_sex_ressort = {}
+    cf_edu_ressort = {}
+
+    for ressort in RESSORTS:
+
+        if ressort_mapping(article_ressort) == ressort:
+
+            for age in NORMALIZED_AGES:
+                feature = '%s_%s' % (ressort,age)
+                if normalize_age(user_age) == age:
+                    cf_age_ressort[feature] = 1
+                else:
+                    cf_age_ressort[feature] = 0
+            for sex in SEXES:
+                feature = '%s_%s' % (ressort,sex)
+                if user_sex == sex:
+                    cf_sex_ressort[feature] = 1
+                else:
+                    cf_sex_ressort[feature] = 0
+            for edu in EDUCATIONS:
+                feature = '%s_%s' % (ressort,edu)
+                if user_education == edu:
+                    cf_edu_ressort[feature] = 1
+                else:
+                    cf_edu_ressort[feature] = 0
+
+        else:
+
+            for age in NORMALIZED_AGES:
+                feature = "%s_%s" % (ressort,age)
+                cf_age_ressort[feature] = 0
+            for sex in SEXES:
+                feature = "%s_%s" % (ressort,sex)
+                cf_sex_ressort[feature] = 0
+            for edu in EDUCATIONS:
+                feature = "%s_%s" % (ressort,edu)
+                cf_edu_ressort[feature] = 0
+
+
+    cf_age_page = {}
+    cf_sex_page = {}
+    cf_edu_page = {}
+
+    for normalized_page in NORMALIZED_PAGES:
+
+        if normalize_pages(article_page) == normalized_page:
+
+            for age in NORMALIZED_AGES:
+                feature = '%s_%s' % (normalized_page,age)
+                if normalize_age(user_age) == age:
+                    cf_age_page[feature] = 1
+                else:
+                    cf_age_page[feature] = 0
+            for sex in SEXES:
+                feature = '%s_%s' % (normalized_page,sex)
+                if user_sex == sex:
+                    cf_sex_page[feature] = 1
+                else:
+                    cf_sex_page[feature] = 0
+            for edu in EDUCATIONS:
+                feature = '%s_%s' % (normalized_page,edu)
+                if user_education == edu:
+                    cf_edu_page[feature] = 1
+                else:
+                    cf_edu_page[feature] = 0
+
+        else:
+
+            for age in NORMALIZED_AGES:
+                feature = "%s_%s" % (normalized_page,age)
+                cf_age_page[feature] = 0
+            for sex in SEXES:
+                feature = "%s_%s" % (normalized_page,sex)
+                cf_sex_page[feature] = 0
+            for edu in EDUCATIONS:
+                feature = "%s_%s" % (normalized_page,edu)
+                cf_edu_page[feature] = 0
+
+    return cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page
 
 
 
