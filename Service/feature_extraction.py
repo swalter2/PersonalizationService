@@ -20,7 +20,7 @@ def ressort_mapping(ressort):
     elif result == 'Sport_Bund':
         result = 'Sport_Bund'
 
-    return ressort
+    return result
 
 
 #fuer vergleich von interessen mit titel oder text
