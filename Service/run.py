@@ -23,29 +23,40 @@ datum = today.strftime("%d%m%Y")
 #datum = '21032016'
 
 url = "http://ftp.forschungsdatenmanagement.org/nw/8586833-Kogni-"+datum+".zip"
-print(url)
-filename = wget.download(url)
-#filename = "8586833-Kogni-"+datum+".zip"
-print(filename)
-importer = XMLImporter(database)
-with zipfile.ZipFile(filename, 'r') as z:
-    z.extractall(filename.replace('.zip',''))
-print('extracted file')
+#print(url)
+#filename = wget.download(url)
+filename = "8586833-Kogni-"+datum+".zip"
+#print(filename)
+#importer = XMLImporter(database)
+#with zipfile.ZipFile(filename, 'r') as z:
+#    z.extractall(filename.replace('.zip',''))
+#print('extracted file')
+#
+#file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
+#if os.path.isfile(file_to_import):
+#    print(file_to_import)
+#    importer.read_xml_file(file_to_import)
+#print('imported everything to DB')
+#
 
-file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
-if os.path.isfile(file_to_import):
-    print(file_to_import)
-    importer.read_xml_file(file_to_import)
-print('imported everything to DB')
+database.checkanddeletearticleexceptdate(datum)
+print('cleaned database from old articles')
+
 
 print('start global learning')
 learning = Learning(host, user, password, db, datum)
 learning.global_learn()
 print('done global learning')
 
-database.checkanddeletearticleexceptdate(datum)
-print('cleaned database from old articles')
 
+for the_file in os.listdir(filename.replace('.zip','')):
+    file_path = os.path.join(filename.replace('.zip',''), the_file)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+    except Exception as e:
+        print(e)
 os.remove(filename)
 os.rmdir(filename.replace('.zip',''))
 print('done with all')

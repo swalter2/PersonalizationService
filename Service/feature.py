@@ -61,6 +61,7 @@ def normalize_age(age):
         feature['bis30'] = 0
         feature['30-35'] = 0
         feature['35-40'] = 1
+        feature['40-45'] = 0
         feature['45-50'] = 0
         feature['50-60'] = 0
         feature['60-70'] = 0
@@ -205,6 +206,7 @@ def train(database):
     user_informations = {}
     for id in user_ids:
         user_informations[id] = database.getuserinformations(id)
+        user_informations[id].append(database.getuserinterests(id))  # die interessen sind als dict gespeichert
 
     article_informations = {}
     for id in artikel_ids:
@@ -222,6 +224,22 @@ def train(database):
             feature.update(normalize_article_ressort_to_dict(article[2],ressort_list))
             feature.update(normalize_pages(article[3]))
             feature.update(user_information_vector(user))
+            user_interest_list = []
+            for interest_id in user[8].keys():  # erstelle Liste der User-Interessen für den Vergleich mit Text
+                user_interest_list.append(user[8][interest_id]['name'])
+            feature.update(compare_string_to_interests(article[0] + " " + article[1], user_interest_list,
+                                                       mode='user_specific_titel_and_text'))
+            # cross-feature with ressort and normalized page
+            cf_age_ressort, cf_sex_ressort, cf_edu_ressort, cf_age_page, cf_sex_page, cf_edu_page \
+                = compute_cross_features(user[0], user[1], user[2], article[3], article[3])
+
+            feature.update(cf_age_ressort)
+            feature.update(cf_sex_ressort)
+            feature.update(cf_edu_ressort)
+            feature.update(cf_age_page)
+            feature.update(cf_sex_page)
+            feature.update(cf_edu_page)
+
             if annotation[2] == 4:
                 bewertungen_0.append(0)
                 features_0.append(feature)
@@ -275,11 +293,14 @@ def ressort_mapping(ressort):
 #fuer vergleich von interessen mit titel oder text
 def compare_string_to_interests(string,interest_list, mode = 'prior_title'):
     result = {}
+    #initialize vector
+    result[mode + '_interest'] = 0
     for interest in interest_list:
         #todo hier besser splitten als mit space
         for word in string.split():
             if interest.lower() in word.lower():
                 result[mode + '_interest'] = 1
+                break;
     return result
 
 #fuer die crossfeatures mit ressort und page_normalized

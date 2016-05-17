@@ -22,6 +22,7 @@ class Learning:
     clf = ''
     date = ''
     ressort_list = ''
+    list_featurenames = set()
 
     def __init__(self, host, user, password, db, date):
         Learning.database = Database(host, user, password, db)
@@ -34,6 +35,9 @@ class Learning:
         training_features = pickle.load(open("resources/training_features.p", "rb"))
         training_annotations = pickle.load(open("resources/training_features_annotations.p", "rb"))
         vec = DictVectorizer()
+        for  s in training_features:
+            for key in s:
+                Learning.list_featurenames.add(key)
         feature_vectorized = vec.fit_transform(training_features)
         X = np.array(feature_vectorized.toarray())
         y = np.array(training_annotations)
@@ -57,6 +61,9 @@ class Learning:
     @staticmethod
     def prediction(cos, user, article):
         feature = {}
+
+        feature = {}
+
         #ressort-prior-feature
         feature.update(normalize_article_ressort_to_dict(ressort_mapping(article[2]), Learning.ressort_list))
         #page prior feature
@@ -70,7 +77,7 @@ class Learning:
         feature.update(compare_string_to_interests(article[0] + " " + article[1], user_interest_list, mode='user_specific_titel_and_text'))
         #cross-feature with ressort and normalized page
         cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page\
-            = compute_cross_features(user[0],user[1],user[2],article[3])
+            = compute_cross_features(user[0],user[1],user[2],article[3],article[3])
 
         feature.update(cf_age_ressort)
         feature.update(cf_sex_ressort)
@@ -78,7 +85,6 @@ class Learning:
         feature.update(cf_age_page)
         feature.update(cf_sex_page)
         feature.update(cf_edu_page)
-
         #todo specific ressort rating feature  (dafür sind die ressort_ratings der user nötig!)
         #todo specific ressort rating mit explizitem rating
 
@@ -93,6 +99,15 @@ class Learning:
             value = float(result_prediction[1])
         except:
             print('error in learning')
+            tmp_list_featurenames = set()
+            for s in feature:
+                tmp_list_featurenames.add(s)
+            print(list(Learning.list_featurenames-tmp_list_featurenames))
+            print(list(tmp_list_featurenames-Learning.list_featurenames))
+            print(len(Learning.list_featurenames))
+            print(len(tmp_list_featurenames))
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
             value = 0.0
         if value > 0.7 and cos > 0.0:
             return 1.0
