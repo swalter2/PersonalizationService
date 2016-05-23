@@ -114,9 +114,9 @@ def normalize_age(age):
     return feature
 
 #fuer das prior feature mit den ressorts
-def normalize_article_ressort_to_dict(article_ressort,ressort_list):
+def normalize_article_ressort_to_dict(article_ressort):
     result = {}
-    for ressort in ressort_list:
+    for ressort in RESSORTS:
         if article_ressort.lower() == ressort.lower():
             result[ressort] = 1
         else:
