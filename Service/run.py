@@ -24,20 +24,20 @@ datum = today.strftime("%d%m%Y")
 
 url = "http://ftp.forschungsdatenmanagement.org/nw/8586833-Kogni-"+datum+".zip"
 #print(url)
-#filename = wget.download(url)
-filename = "8586833-Kogni-"+datum+".zip"
-#print(filename)
-#importer = XMLImporter(database)
-#with zipfile.ZipFile(filename, 'r') as z:
-#    z.extractall(filename.replace('.zip',''))
-#print('extracted file')
-#
-#file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
-#if os.path.isfile(file_to_import):
-#    print(file_to_import)
-#    importer.read_xml_file(file_to_import)
-#print('imported everything to DB')
-#
+filename = wget.download(url)
+#filename = "8586833-Kogni-"+datum+".zip"
+print(filename)
+importer = XMLImporter(database)
+with zipfile.ZipFile(filename, 'r') as z:
+    z.extractall(filename.replace('.zip',''))
+print('extracted file')
+
+file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
+if os.path.isfile(file_to_import):
+    print(file_to_import)
+    importer.read_xml_file(file_to_import)
+print('imported everything to DB')
+
 
 database.checkanddeletearticleexceptdate(datum)
 print('cleaned database from old articles')
