@@ -57,8 +57,13 @@ class Learning:
     @staticmethod
     def prediction(cos, user, article):
         feature = {}
+
+        normalized_article_ressort = ressort_mapping(article[2])
+
         #ressort-prior-feature
-        feature.update(normalize_article_ressort_to_dict(ressort_mapping(article[2]), Learning.ressort_list))
+        normalized_ressort_dict_article = normalize_article_ressort_to_dict(normalized_article_ressort, Learning.ressort_list)
+
+        feature.update(normalized_ressort_dict_article)
         #page prior feature
         feature.update(normalize_pages(article[3]))
         #prior-infos about user
@@ -79,8 +84,18 @@ class Learning:
         feature.update(cf_sex_page)
         feature.update(cf_edu_page)
 
-        #todo specific ressort rating feature  (dafür sind die ressort_ratings der user nötig!)
-        #todo specific ressort rating mit explizitem rating
+
+
+
+        normalized_ressort_dict_user = normalize_user_ressort_ratings_to_dict(user)
+
+        ##User X findet Ressort Y gut und Artikel Z ist aus Ressort Y (5 binaere features)
+        ressort_specific_dict = user_specific_ressort_ratings(normalized_ressort_dict_user, normalized_article_ressort)
+        feature.update(ressort_specific_dict)
+
+        #User X findet Ressort Y mit Wertung Z gut und Artikel ist aus Ressort Y (25 binaere features, davon eins = 1)
+        ressort_specific_dict_with_ratings = user_specific_ressort_explicit_ratings(normalized_ressort_dict_user, normalized_article_ressort)
+        feature.update(ressort_specific_dict_with_ratings)
 
         vec = DictVectorizer()
         value = 0

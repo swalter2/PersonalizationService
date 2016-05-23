@@ -8,7 +8,7 @@ import pickle
 import sys
 
 #listen nötig für cross-feature-berechnungen
-RESSORTS = ['Bielefeld','Kultur','Sport Bielefeld','Politik','Sport_Bund']
+RESSORTS = ['Kultur','Bielefeld','Sport Bielefeld','Politik','Sport_Bund']
 NORMALIZED_PAGES = ['1','2','3','4-5','6-7','8','9-16','17-24','25+']
 NORMALIZED_AGES = ['bis30','30-35','35-40','40-45','45-50','50-60','60-70','groeßer70']
 SEXES = ['m','f']
@@ -122,6 +122,15 @@ def normalize_article_ressort_to_dict(article_ressort,ressort_list):
         else:
             result[ressort] = 0
     return result
+
+#fuer die user-spezifischen Ressort Features
+def normalize_user_ressort_ratings_to_dict(user_information):
+    result = {}
+    for i in range(0,5):
+        result[RESSORTS[i]] = user_information[i+3]
+    return result
+
+
 
 def user_information_vector(user):
     result = {}
@@ -366,5 +375,32 @@ def compute_cross_features(user_age, user_sex, user_education, article_page, art
 
     return cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page
 
+#User X findet Ressort Y gut und Artikel Z ist aus Ressort Y
+def user_specific_ressort_ratings(ressort_ratings_user, ressort_artikel, threshold = 3):
+    result = {}
+
+    for key in ressort_ratings_user:
+        dict_key = "ressort_specific_%s" % key
+        if key == ressort_artikel and ressort_ratings_user[key] >= threshold:
+            result[dict_key] = 1
+        else:
+            result[dict_key] = 0
+
+    return result
+
+#User X findet Ressort Y mit Wertung Z gut und Artikel ist aus Ressort Y
+def user_specific_ressort_explicit_ratings(ressort_ratings_user,ressort_artikel):
+    result = {}
+
+    for ressort in ressort_ratings_user.keys():
+        feature_name = 'user_specific_ressort_rating_' + ressort +'_'
+        for j in range(1,6):
+            feature_name += '%d' % j
+            if ressort_ratings_user[ressort] == j and ressort_artikel == ressort:
+                result[feature_name] = 1
+            else:
+                result[feature_name] = 0
+
+    return result
 
 
