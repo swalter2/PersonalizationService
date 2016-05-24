@@ -230,7 +230,8 @@ def train(database):
             feature = {}
             article = article_informations[artikel_id]
             user = user_informations[user_id]
-            feature.update(normalize_article_ressort_to_dict(article[2],ressort_list))
+            normalized_article_ressort = ressort_mapping(article[2])
+            feature.update(normalize_article_ressort_to_dict(normalized_article_ressort))
             feature.update(normalize_pages(article[3]))
             feature.update(user_information_vector(user))
             user_interest_list = []
@@ -248,6 +249,19 @@ def train(database):
             feature.update(cf_age_page)
             feature.update(cf_sex_page)
             feature.update(cf_edu_page)
+
+            normalized_ressort_dict_user = normalize_user_ressort_ratings_to_dict(user)
+
+            ##User X findet Ressort Y gut und Artikel Z ist aus Ressort Y (5 binaere features)
+            ressort_specific_dict = user_specific_ressort_ratings(normalized_ressort_dict_user,
+                                                                  normalized_article_ressort)
+            feature.update(ressort_specific_dict)
+
+            # User X findet Ressort Y mit Wertung Z gut und Artikel ist aus Ressort Y (25 binaere features, davon eins = 1)
+            ressort_specific_dict_with_ratings = user_specific_ressort_explicit_ratings(normalized_ressort_dict_user,
+                                                                                        normalized_article_ressort)
+            feature.update(ressort_specific_dict_with_ratings)
+
 
             if annotation[2] == 4:
                 bewertungen_0.append(0)
