@@ -6,7 +6,7 @@ import numpy as np
 #mappt alle aktuellen NW-Ressorts auf die 5 Ressorts aus dem Experiment
 def ressort_mapping(ressort):
     result = ''
-
+    print(ressort)
     if ressort in ['Gütersloh','Bünde','Warburg','Herford','Löhne','Lübbecke','Höxter','Paderborn',
                    'Enger-Spenge','Bad Oeynhausen','Bielefeld','Schloss Holte', 'Beilagen']:
         result = 'Bielefeld'
@@ -15,9 +15,9 @@ def ressort_mapping(ressort):
         result = 'Sport Bielefeld'
     elif ressort == 'Kultur':
         result = 'Kultur'
-    elif result == 'Politik':
+    elif ressort in ['Politik','Politik / Politik']:
         result = 'Politik'
-    elif result == 'Sport_Bund':
+    elif ressort == 'Sport_Bund':
         result = 'Sport_Bund'
 
     return result

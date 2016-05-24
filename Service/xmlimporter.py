@@ -59,6 +59,8 @@ class XMLImporter:
                                 artikel_rubrik = str(titelliste.text)
                             if titelliste.tag == "ressort":
                                 artikel_ressort = str(titelliste.text)
+                                if artikel_ressort == 'Politik / Politik':
+                                    artikel_ressort = 'Politik'
 
                     if e.tag == "quelle":
                         for quelle in e:
