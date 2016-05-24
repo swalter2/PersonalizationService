@@ -62,10 +62,7 @@ class Learning:
     def prediction(cos, user, article):
         feature = {}
 
-        feature = {}
-
         normalized_article_ressort = ressort_mapping(article[2])
-
 
         #ressort-prior-feature
         normalized_ressort_dict_article = normalize_article_ressort_to_dict(normalized_article_ressort)
