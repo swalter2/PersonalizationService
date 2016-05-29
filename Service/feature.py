@@ -306,9 +306,9 @@ def ressort_mapping(ressort):
         result = 'Sport Bielefeld'
     elif ressort == 'Kultur':
         result = 'Kultur'
-    elif result == 'Politik':
+    elif ressort == 'Politik':
         result = 'Politik'
-    elif result == 'Sport_Bund':
+    elif ressort == 'Sport_Bund':
         result = 'Sport_Bund'
 
     return result
