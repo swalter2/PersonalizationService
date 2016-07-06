@@ -19,7 +19,7 @@ db = 'wikipedia_new'
 
 
 #curl http://localhost:5000/service/\?personid\='1'
-@service.route('/service/', methods=['POST'])
+@service.route('/service', methods=['POST'])
 def get_articles_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
@@ -38,7 +38,7 @@ def get_articles_for_id():
 
 
 #curl http://localhost:5000/getinterestscores/\?personid\='1'
-@service.route('/getinterestscores/', methods=['POST'])
+@service.route('/getinterestscores', methods=['POST'])
 def get_scores_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
@@ -55,7 +55,7 @@ def get_scores_for_id():
 
 #updates a score, but also temporary adds a new interest with score (last one takes longer)
 #curl http://localhost:5000/servicewithupdatedscoretemp/\?personid\='1'\&interestname\='fussball'\&score\='0'
-@service.route('/servicewithupdatedscoretemp/', methods=['POST'])
+@service.route('/servicewithupdatedscoretemp', methods=['POST'])
 def update_score_temp():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
