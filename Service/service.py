@@ -83,7 +83,7 @@ def update_score_temp(args):
     learning = Learning(host, user, password, db, date)
     userid = int(args['personid'])
     user_information =  Learning.database.getuserinformations(userid)
-    user_information.append(Learning.database.getuserinterests(userid))  # die interessen sind als dict gespeicher
+    user_information.append(Learning.database.getuserinterests(userid))
 
     interestname = args['interestname']
     score = args['score']

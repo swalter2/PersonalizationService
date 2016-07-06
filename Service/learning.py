@@ -122,10 +122,10 @@ class Learning:
             print("Unexpected error:", sys.exc_info()[0])
             raise
             value = 0.0
-        if value > 0.8 and cos > 0.0:
+        if value > 0.95 and cos > 0.0:
             return 1.0
         else:
-            if cos == 0.0 and value > 0.8:
+            if cos == 0.0 and value > 0.90:
                 return value
 
         #default
