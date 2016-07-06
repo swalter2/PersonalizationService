@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, jsonify, request
-from webargs import fields
-from webargs.flaskparser import use_args
 from database import Database
 from learning import Learning
 import datetime
@@ -19,107 +17,93 @@ password = '1234567'
 db = 'wikipedia_new'
 
 
-#tmp_database = Database(host, user, password, db)
-#train(tmp_database)
-#tmp_database.close()
-
-
-article_args = {
-    'personid': fields.Int(required=True),
-    'mode': fields.Str(required=False)
-}
-
-user_args = {
-    'name': fields.Str(required=True),
-    'vorname': fields.Str(required=True),
-    'alter': fields.Str(required=True)
-}
-
-score_args = {
-    'personid': fields.Int(required=True),
-    'interestname': fields.Str(required=True),
-    'score': fields.Str(required=True)
-}
-
 
 #curl http://localhost:5000/service/\?personid\='1'
-@service.route('/service/', methods=['GET'])
-@use_args(article_args)
-def get_articles_for_id(args):
-    database = Database(host, user, password, db)
-    id = int(args['personid'])
-    try:
-        mode = args['mode']
-    except:
-        pass
-    result = database.getpersonalizedarticles(id)
+@service.route('/service/', methods=['POST'])
+def get_articles_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        database = Database(host, user, password, db)
+        id = int(json_input['personid'])
+        try:
+            mode = json_input['mode']
+        except:
+            pass
+        result = database.getpersonalizedarticles(id)
 
-    database.close()
-
-    return jsonify(result)
+        database.close()
+        return jsonify(result)
+    else:
+        return "415 Unsupported Media Type ;)"
 
 
 #curl http://localhost:5000/getinterestscores/\?personid\='1'
-@service.route('/getinterestscores/', methods=['GET'])
-@use_args(article_args)
-def get_scores_for_id(args):
-    database = Database(host, user, password, db)
-    id = int(args['personid'])
-    result = database.getuserinterests(id)
+@service.route('/getinterestscores/', methods=['POST'])
+def get_scores_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        database = Database(host, user, password, db)
+        id = int(json_input['personid'])
+        result = database.getuserinterests(id)
 
-    database.close()
+        database.close()
 
-    return jsonify(result)
+        return jsonify(result)
+    else:
+        return "415 Unsupported Media Type ;)"
 
 
 #updates a score, but also temporary adds a new interest with score (last one takes longer)
 #curl http://localhost:5000/servicewithupdatedscoretemp/\?personid\='1'\&interestname\='fussball'\&score\='0'
-@service.route('/servicewithupdatedscoretemp/', methods=['GET'])
-@use_args(score_args)
-def update_score_temp(args):
-    today = datetime.datetime.now()
-    date = today.strftime("%d%m%Y")
-    database = Database(host, user, password, db)
-    learning = Learning(host, user, password, db, date)
-    userid = int(args['personid'])
-    user_information =  Learning.database.getuserinformations(userid)
-    user_information.append(Learning.database.getuserinterests(userid))
+@service.route('/servicewithupdatedscoretemp/', methods=['POST'])
+def update_score_temp():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        today = datetime.datetime.now()
+        date = today.strftime("%d%m%Y")
+        database = Database(host, user, password, db)
+        learning = Learning(host, user, password, db, date)
+        userid = int(json_input['personid'])
+        user_information =  Learning.database.getuserinformations(userid)
+        user_information.append(Learning.database.getuserinterests(userid))
 
-    interestname = args['interestname']
-    score = args['score']
-    tmp = {}
-    if ',' in interestname:
-        for x in interestname.split(','):
-            tmp[x] = score
+        interestname = json_input['interestname']
+        score = json_input['score']
+        tmp = {}
+        if ',' in interestname:
+            for x in interestname.split(','):
+                tmp[x] = score
+        else:
+            tmp[interestname] = score
+
+        articleids = database.getarticleidswithoutdate()
+        article_informations = {}
+        for id in articleids:
+            article_informations[id] = Learning.database.getarticleinformations(id)
+
+        results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
+        prediction = {}
+        for articleid in results:
+            score = results[articleid]
+            if score > 0.0:
+                artikel = database.getarticletext(articleid)
+                artikel_tmp = {}
+                artikel_tmp['id'] = articleid
+                artikel_tmp['score'] = score
+                artikel_tmp['titel'] = artikel[0].get('titel')
+                artikel_tmp['text'] = artikel[0].get('text')
+                prediction[articleid] = artikel_tmp
+        try:
+            learning.close()
+        except:
+            pass
+        try:
+            database.close()
+        except:
+            pass
+        return jsonify(prediction)
     else:
-        tmp[interestname] = score
-
-    articleids = database.getarticleidswithoutdate()
-    article_informations = {}
-    for id in articleids:
-        article_informations[id] = Learning.database.getarticleinformations(id)
-
-    results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
-    prediction = {}
-    for articleid in results:
-        score = results[articleid]
-        if score > 0.0:
-            artikel = database.getarticletext(articleid)
-            artikel_tmp = {}
-            artikel_tmp['id'] = articleid
-            artikel_tmp['score'] = score
-            artikel_tmp['titel'] = artikel[0].get('titel')
-            artikel_tmp['text'] = artikel[0].get('text')
-            prediction[articleid] = artikel_tmp
-    try:
-        learning.close()
-    except:
-        pass
-    try:
-        database.close()
-    except:
-        pass
-    return jsonify(prediction)
+        return "415 Unsupported Media Type ;)"
 
 
 
