@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
+from scipy import spatial
 
 def combine_noun_adjectives(tags):
         output = ""
@@ -15,8 +16,7 @@ def combine_noun_adjectives(tags):
         return output.lower()
 
 
-
-def calcualtecos(vector1, vector2):
+def calculatesimilarity(vector1, vector2):
     #cos = skalar/(sqrt(norm_vec1)*sqrt(norm_vec2))
 
     #step1: create vector with all items in it
@@ -41,7 +41,7 @@ def calcualtecos(vector1, vector2):
             vec2[item] = 0.0
     if len(vec1) == 0 or len(vec2) == 0:
         return 0.0
-#
+
     #step2: fill vectors with actual values
     for item in vec1:
         vec1[item] = vector1[item]
@@ -65,4 +65,4 @@ def calcualtecos(vector1, vector2):
         return 0.0
     else:
         cos = scalar/(math.sqrt(norm_vec1)*math.sqrt(norm_vec2))
-        return cos
+        return 1 - cos

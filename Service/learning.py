@@ -222,8 +222,9 @@ class Learning:
             for x, y in reduced_sorted_article_vector:
                 reduced_sorted_article_vector_hm[x] = y
 
-            cos = calcualtecos(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
-            predicted_value =  Learning.prediction(cos, user, articles[article_id])
+            cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
+            #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
+            predicted_value =  Learning.prediction(cos_similarity, user, articles[article_id])
             if predicted_value > 0.0:
                 results[article_id] = predicted_value;
         return results
