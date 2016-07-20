@@ -23,16 +23,21 @@ db = 'wikipedia_new'
 def get_articles_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        database = Database(host, user, password, db)
-        id = int(json_input['personid'])
+        print("Input:", json_input)
         try:
-            mode = json_input['mode']
-        except:
-            pass
-        result = database.getpersonalizedarticles(id)
+            database = Database(host, user, password, db)
+            id = int(json_input['personid'])
+            try:
+                mode = json_input['mode']
+            except:
+                pass
+            result = database.getpersonalizedarticles(id)
 
-        database.close()
-        return jsonify(result)
+            database.close()
+            return jsonify(result)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
     else:
         return "415 Unsupported Media Type ;)"
 
@@ -42,13 +47,16 @@ def get_articles_for_id():
 def get_scores_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        database = Database(host, user, password, db)
-        id = int(json_input['personid'])
-        result = database.getuserinterests(id)
-
-        database.close()
-
-        return jsonify(result)
+        print("Input:",json_input)
+        try:
+            database = Database(host, user, password, db)
+            id = int(json_input['personid'])
+            result = database.getuserinterests(id)
+            database.close()
+            return jsonify(result)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
     else:
         return "415 Unsupported Media Type ;)"
 
@@ -59,49 +67,54 @@ def get_scores_for_id():
 def update_score_temp():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        today = datetime.datetime.now()
-        date = today.strftime("%d%m%Y")
-        database = Database(host, user, password, db)
-        learning = Learning(host, user, password, db, date)
-        userid = int(json_input['personid'])
-        user_information =  Learning.database.getuserinformations(userid)
-        user_information.append(Learning.database.getuserinterests(userid))
-
-        interestname = json_input['interestname']
-        score = json_input['score']
-        tmp = {}
-        if ',' in interestname:
-            for x in interestname.split(','):
-                tmp[x] = score
-        else:
-            tmp[interestname] = score
-
-        articleids = database.getarticleidswithoutdate()
-        article_informations = {}
-        for id in articleids:
-            article_informations[id] = Learning.database.getarticleinformations(id)
-
-        results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
-        prediction = {}
-        for articleid in results:
-            score = results[articleid]
-            if score > 0.0:
-                artikel = database.getarticletext(articleid)
-                artikel_tmp = {}
-                artikel_tmp['id'] = articleid
-                artikel_tmp['score'] = score
-                artikel_tmp['titel'] = artikel[0].get('titel')
-                artikel_tmp['text'] = artikel[0].get('text')
-                prediction[articleid] = artikel_tmp
+        print("Input:", json_input)
         try:
-            learning.close()
+            today = datetime.datetime.now()
+            date = today.strftime("%d%m%Y")
+            database = Database(host, user, password, db)
+            learning = Learning(host, user, password, db, date)
+            userid = int(json_input['personid'])
+            user_information =  Learning.database.getuserinformations(userid)
+            user_information.append(Learning.database.getuserinterests(userid))
+
+            interestname = json_input['interestname']
+            score = json_input['score']
+            tmp = {}
+            if ',' in interestname:
+                for x in interestname.split(','):
+                    tmp[x] = score
+            else:
+                tmp[interestname] = score
+
+            articleids = database.getarticleidswithoutdate()
+            article_informations = {}
+            for id in articleids:
+                article_informations[id] = Learning.database.getarticleinformations(id)
+
+            results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
+            prediction = {}
+            for articleid in results:
+                score = results[articleid]
+                if score > 0.0:
+                    artikel = database.getarticletext(articleid)
+                    artikel_tmp = {}
+                    artikel_tmp['id'] = articleid
+                    artikel_tmp['score'] = score
+                    artikel_tmp['titel'] = artikel[0].get('titel')
+                    artikel_tmp['text'] = artikel[0].get('text')
+                    prediction[articleid] = artikel_tmp
+            try:
+                learning.close()
+            except:
+                pass
+            try:
+                database.close()
+            except:
+                pass
+            return jsonify(prediction)
         except:
-            pass
-        try:
-            database.close()
-        except:
-            pass
-        return jsonify(prediction)
+            print("500 - error in json input")
+            return "500 - error in json input"
     else:
         return "415 Unsupported Media Type ;)"
 
