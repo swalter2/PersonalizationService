@@ -1,13 +1,4 @@
-
-Service/.idea/encodings.xml
-
-Service/.idea/misc.xml
-
-Service/.idea/modules.xml
-
-Service/.idea/Service.iml
-
-Service/.idea/workspace.xml
+*/.idea/*
 
 *.pyc
 
