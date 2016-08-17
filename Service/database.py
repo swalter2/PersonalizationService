@@ -860,8 +860,8 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             return -1
 
+    @staticmethod
     def updateUser(json_input):
-
         translations = {}
         translations["electro"] = "Electro"
         translations["hiphop"] = "Hip Hop"
@@ -880,7 +880,6 @@ class Database:
         translations["swimming"] =  "Schwimmen"
         translations["tennis"] =  "Tennis"
         translations["wintersport"] = "Wintersport"
-
 
         person_id = json_input['personid']
 
@@ -917,6 +916,7 @@ class Database:
             interessen_vector[translations[musik]] = interessen_musik_hm[musik]
 
         Database.deleteuser(person_id)
+        print("deleted user with id:" +str(person_id))
 
         try:
 

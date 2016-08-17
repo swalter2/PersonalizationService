@@ -64,14 +64,17 @@ def update_user():
         try:
             person_id = 0
             database = Database(host, user, password, db)
-            try:
+            if 'personid' in json_input:
                 person_id = json_input['personid']
-                database.updateUser()
-            except:
+                database.updateUser(json_input)
+                learning = Learning(host, user, password, db, datum)
+                learning.single_learn(person_id)
+                print("done with user update")
+            else:
                 person_id = database.addUser(json_input)
                 learning = Learning(host, user, password, db, datum)
                 learning.single_learn(person_id)
-            print("done with adding new user")
+                print("done with adding new user")
             database.close()
             return jsonify({"personid":person_id})
         except:
@@ -91,7 +94,6 @@ def get_articles_for_id():
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])
-            print('personid',personid)
             try:
                 mode = json_input['mode']
             except:
@@ -99,17 +101,13 @@ def get_articles_for_id():
             results = {}
 
             result = database.getpersonalizedarticles(personid)
-            print(len(result))
             results['artikel'] = result
 
             result = database.getpersonalizedevents(personid)
             results['events'] = result
-            print(len(result))
 
             result = database.getpersonalizedrecipes(personid)
             results['rezepte'] = result
-            print(len(result))
-
 
             database.close()
             return jsonify(results)
