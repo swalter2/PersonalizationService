@@ -605,6 +605,17 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             raise
 
+    @staticmethod
+    def deleteuser(userid):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "DELETE FROM nutzer WHERE id=%s;"
+                cursor.execute(sql, userid)
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
 
     @staticmethod
     def _tmp_add_interesse(userid, interesse, score):
@@ -618,13 +629,11 @@ class Database:
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-        print('old:' + interesse)
         tags = Database._lemmatizer.lemmatize(interesse)
         interesse = ""
         for term, tag in tags:
             interesse += " "+term
         interesse = interesse.strip()
-        print('new:'+interesse)
 
         interessensid = 0
         if interesse in interessen:
@@ -649,7 +658,6 @@ class Database:
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
-        print("interessenid:"+str(interessensid))
         #add interesse zu nutzer_interesse, wenn nicht bereits vorhanden
         results = set()
         try:
@@ -670,6 +678,25 @@ class Database:
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 raise
+            if len(Database.getinterestvectorforid(interessensid, ALL_ARTICLES)) == 0:
+                tmp_vector_0 = Database.getarticlesfromwikipedia(ALL_ARTICLES, interesse, 100)
+                if len(tmp_vector_0) == 0:
+                    tmp_vector_0['0'] = 0
+                Database.updatedbwithinterestvector(interessensid, tmp_vector_0, ALL_ARTICLES)
+            #also create vector for interests, if interest does not exist as vector..
+            #if len(Database.getinterestvectorforid(interessensid,ONLY_PERSONS))==0:
+            #    tmp_vector_0 = Database.getarticlesfromwikipedia(ONLY_PERSONS, interesse, 100)
+            #    if len(tmp_vector_0) == 0:
+            #        tmp_vector_0['0'] = 0
+            #    Database.updatedbwithinterestvector(interessensid, tmp_vector_0, WITHOUT_PERSONS)
+            #if len(Database.getinterestvectorforid(interessensid,WITHOUT_PERSONS))==0:
+            #    tmp_vector_0 = Database.getarticlesfromwikipedia(WITHOUT_PERSONS, interesse, 100)
+            #    if len(tmp_vector_0) == 0:
+            #        tmp_vector_0['0'] = 0
+            #    Database.updatedbwithinterestvector(interessensid, tmp_vector_0, WITHOUT_PERSONS)
+
+
+
 
 
     @staticmethod
@@ -747,6 +774,170 @@ class Database:
             raise
 
         return ages
+
+    @staticmethod
+    def getpersonalizedevents(id):
+        return {}
+
+    @staticmethod
+    def getpersonalizedrecipes(id):
+        return {}
+
+    @staticmethod
+    def addUser(json_input):
+
+        translations = {}
+        translations["electro"] = "Electro"
+        translations["hiphop"] = "Hip Hop"
+        translations["jazz"] =  "Jazz"
+        translations["metal"] =  "Metal"
+        translations["other_music"] =  "Musik"
+        translations["pop"] =  "Pop"
+        translations["rock"] =  "Rock"
+        translations["basketball"] = "Basketball"
+        translations["cycling"] =  "Fahhrad fahren"
+        translations["golf"] =  "Golf"
+        translations["handball"] =  "Handball"
+        translations["others_sport"] =  "Sport"
+        translations["riding"] =  "Reiten"
+        translations["soccer"] =  "Fußball"
+        translations["swimming"] =  "Schwimmen"
+        translations["tennis"] =  "Tennis"
+        translations["wintersport"] = "Wintersport"
+
+
+        person_ids = Database.getuserids()
+        person_id = max(person_ids)+1
+
+        interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
+        interest_rating = interest_rating[0]
+
+        interessen_sport_list = interest_rating['interest_sports']
+        interessen_sport_hm = interessen_sport_list[0]
+        interessen_sport = 0
+        for sport in interessen_sport_hm:
+            interessen_sport += int(interessen_sport_hm[sport])
+        interessen_sport = round(interessen_sport/(len(interessen_sport_hm)+0.0))
+
+        interessen_lokales = interest_rating['localnews']
+
+        interessen_politik = interest_rating['politics']
+
+        geschlecht = "m"
+        if json_input['sex'] == 'Weiblich':
+            geschlecht = 'w'
+
+        abschluss = json_input['educationlevel']
+
+        #interessen_kultur fehlt
+        #interessen_lokalsport fehlt
+
+        interessen_vector = {}
+        for sport in interessen_sport_hm:
+            interessen_vector[translations[sport]] = interessen_sport_hm[sport]
+
+        interessen_musik_list = interest_rating['interest_musics']
+        interessen_musik_hm = interessen_musik_list[0]
+        for musik in interessen_musik_hm:
+            interessen_vector[translations[musik]] = interessen_musik_hm[musik]
+
+        print(interessen_vector)
+
+        try:
+
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
+                      "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
+                      "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0"))
+                Database.connection.commit()
+
+            for interesse in interessen_vector:
+                Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
+
+            return person_id
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            return -1
+
+    def updateUser(json_input):
+
+        translations = {}
+        translations["electro"] = "Electro"
+        translations["hiphop"] = "Hip Hop"
+        translations["jazz"] =  "Jazz"
+        translations["metal"] =  "Metal"
+        translations["other_music"] =  "Musik"
+        translations["pop"] =  "Pop"
+        translations["rock"] =  "Rock"
+        translations["basketball"] = "Basketball"
+        translations["cycling"] =  "Fahhrad fahren"
+        translations["golf"] =  "Golf"
+        translations["handball"] =  "Handball"
+        translations["others_sport"] =  "Sport"
+        translations["riding"] =  "Reiten"
+        translations["soccer"] =  "Fußball"
+        translations["swimming"] =  "Schwimmen"
+        translations["tennis"] =  "Tennis"
+        translations["wintersport"] = "Wintersport"
+
+
+        person_id = json_input['personid']
+
+        interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
+        interest_rating = interest_rating[0]
+
+        interessen_sport_list = interest_rating['interest_sports']
+        interessen_sport_hm = interessen_sport_list[0]
+        interessen_sport = 0
+        for sport in interessen_sport_hm:
+            interessen_sport += int(interessen_sport_hm[sport])
+        interessen_sport = round(interessen_sport/(len(interessen_sport_hm)+0.0))
+
+        interessen_lokales = interest_rating['localnews']
+
+        interessen_politik = interest_rating['politics']
+
+        geschlecht = "m"
+        if json_input['sex'] == 'Weiblich':
+            geschlecht = 'w'
+
+        abschluss = json_input['educationlevel']
+
+        #interessen_kultur fehlt
+        #interessen_lokalsport fehlt
+
+        interessen_vector = {}
+        for sport in interessen_sport_hm:
+            interessen_vector[translations[sport]] = interessen_sport_hm[sport]
+
+        interessen_musik_list = interest_rating['interest_musics']
+        interessen_musik_hm = interessen_musik_list[0]
+        for musik in interessen_musik_hm:
+            interessen_vector[translations[musik]] = interessen_musik_hm[musik]
+
+        Database.deleteuser(person_id)
+
+        try:
+
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
+                      "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
+                      "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0")) #3 is "neutral
+                Database.connection.commit()
+
+            for interesse in interessen_vector:
+                Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
+
+            return person_id
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            return -1
+
+
+
+
 
 
 

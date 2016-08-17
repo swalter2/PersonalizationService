@@ -2,8 +2,9 @@
 from flask import Flask, jsonify, request
 from database import Database
 from learning import Learning
+import sys
 import datetime
-from feature import *
+
 
 service = Flask(__name__)
 
@@ -16,6 +17,69 @@ user = 'wikipedia_new'
 password = '1234567'
 db = 'wikipedia_new'
 
+today = datetime.datetime.now()
+datum = today.strftime("%d%m%Y")
+
+
+#json-{"age":" 25","educationlevel":" Hochschulabschluss",
+# "interestratings":[{"culture":"3",
+# "economy":"3","
+# interest_musics":[{"electro":"5","hiphop":"4","jazz":"2","metal":"1","other_music":"4","pop":"5","rock":"4"}],
+# "interest_sports":[{"basketball":"3","cycling":"3","golf":"2","handball":"3",
+# "others_sport":"5","riding":"5","soccer":"1","swimming":"5","tennis":"4","wintersport":"1"}],
+# "localnews":"2","politics":"1"}],"location":" Bielefeld","name":" Sabrina ","sex":" Weiblich"}
+
+#http://blog.luisrei.com/articles/flaskrest.html
+#def check_auth(username, password):
+#    return username == 'admin' and password == 'secret'
+#
+#def authenticate():
+#    message = {'message': "Authenticate."}
+#    resp = jsonify(message)
+#
+#    resp.status_code = 401
+#    resp.headers['WWW-Authenticate'] = 'Basic realm="Example"'
+#
+#    return resp
+#
+#def requires_auth(f):
+#    @wraps(f)
+#    def decorated(*args, **kwargs):
+#        auth = request.authorization
+#        if not auth:
+#            return authenticate()
+#
+#        elif not check_auth(auth.username, auth.password):
+#            return authenticate()
+#        return f(*args, **kwargs)
+#    return decorated
+#@requires_auth
+
+#curl http://localhost:5000/service/\?personid\='1'
+@service.route('/user', methods=['POST'])
+def update_user():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        print(json_input)
+        try:
+            person_id = 0
+            database = Database(host, user, password, db)
+            try:
+                person_id = json_input['personid']
+                database.updateUser()
+            except:
+                person_id = database.addUser(json_input)
+                learning = Learning(host, user, password, db, datum)
+                learning.single_learn(person_id)
+            print("done with adding new user")
+            database.close()
+            return jsonify({"personid":person_id})
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
 
 
 #curl http://localhost:5000/service/\?personid\='1'
@@ -26,115 +90,36 @@ def get_articles_for_id():
         print("Input:", json_input)
         try:
             database = Database(host, user, password, db)
-            id = int(json_input['personid'])
+            personid = int(json_input['personid'])
+            print('personid',personid)
             try:
                 mode = json_input['mode']
             except:
                 pass
-            result = database.getpersonalizedarticles(id)
+            results = {}
+
+            result = database.getpersonalizedarticles(personid)
+            print(len(result))
+            results['artikel'] = result
+
+            result = database.getpersonalizedevents(personid)
+            results['events'] = result
+            print(len(result))
+
+            result = database.getpersonalizedrecipes(personid)
+            results['rezepte'] = result
+            print(len(result))
+
 
             database.close()
-            return jsonify(result)
+            return jsonify(results)
         except:
             print("500 - error in json input")
             return "500 - error in json input"
     else:
         return "415 Unsupported Media Type ;)"
-
-
-#curl http://localhost:5000/getinterestscores/\?personid\='1'
-@service.route('/getinterestscores', methods=['POST'])
-def get_scores_for_id():
-    if request.headers['Content-Type'] == 'application/json':
-        json_input = request.json
-        print("Input:",json_input)
-        try:
-            database = Database(host, user, password, db)
-            id = int(json_input['personid'])
-            result = database.getuserinterests(id)
-            database.close()
-            return jsonify(result)
-        except:
-            print("500 - error in json input")
-            return "500 - error in json input"
-    else:
-        return "415 Unsupported Media Type ;)"
-
-
-#updates a score, but also temporary adds a new interest with score (last one takes longer)
-#curl http://localhost:5000/servicewithupdatedscoretemp/\?personid\='1'\&interestname\='fussball'\&score\='0'
-@service.route('/servicewithupdatedscoretemp', methods=['POST'])
-def update_score_temp():
-    if request.headers['Content-Type'] == 'application/json':
-        json_input = request.json
-        print("Input:", json_input)
-        try:
-            today = datetime.datetime.now()
-            date = today.strftime("%d%m%Y")
-            database = Database(host, user, password, db)
-            learning = Learning(host, user, password, db, date)
-            userid = int(json_input['personid'])
-            user_information =  Learning.database.getuserinformations(userid)
-            user_information.append(Learning.database.getuserinterests(userid))
-
-            interestname = json_input['interestname']
-            score = json_input['score']
-            tmp = {}
-            if ',' in interestname:
-                for x in interestname.split(','):
-                    tmp[x] = score
-            else:
-                tmp[interestname] = score
-
-            articleids = database.getarticleidswithoutdate()
-            article_informations = {}
-            for id in articleids:
-                article_informations[id] = Learning.database.getarticleinformations(id)
-
-            results = Learning.learn(tmp, articleids, userid, ALL_ARTICLES, user_information, article_informations)
-            prediction = {}
-            for articleid in results:
-                score = results[articleid]
-                if score > 0.0:
-                    artikel = database.getarticletext(articleid)
-                    artikel_tmp = {}
-                    artikel_tmp['id'] = articleid
-                    artikel_tmp['score'] = score
-                    artikel_tmp['titel'] = artikel[0].get('titel')
-                    artikel_tmp['text'] = artikel[0].get('text')
-                    prediction[articleid] = artikel_tmp
-            try:
-                learning.close()
-            except:
-                pass
-            try:
-                database.close()
-            except:
-                pass
-            return jsonify(prediction)
-        except:
-            print("500 - error in json input")
-            return "500 - error in json input"
-    else:
-        return "415 Unsupported Media Type ;)"
-
-
-
-
-
-##curl http://localhost:5000/getinterestscores/\?id\=1
-#@service.route('/adduser/', methods=['GET'])
-#@use_args(user_args)
-#def add_user(args):
-#    name = args['name']
-#    vorname = args['name']
-#    alter = args['age']
-#    result = database.getuserinterests(id)
-#
-#    #return jsonify({'Works': 'bla'})
-#    return jsonify(result)
 
 
 
 if __name__ == '__main__':
-    service.run(debug=False)
+    service.run(debug=True)

@@ -123,7 +123,7 @@ class Learning:
             raise
             value = 0.0
         if value > 0.95 and cos > 0.0:
-            return 1.0
+            return (value+cos)/2
         else:
             if cos == 0.0 and value > 0.90:
                 return value
@@ -164,9 +164,28 @@ class Learning:
             results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
             for articleid in results:
                 score = results[articleid]
-                if score > 0.0:
+                if score > 0.0001:
                     Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
+    @staticmethod
+    def single_learn(userid):
+        articleids = Learning.database.getarticleidsfordate(Learning.date)
+
+        user_informations = {}
+        user_informations[userid] = Learning.database.getuserinformations(userid)  # die userinformations die von der DB kommen sind eine Liste
+        user_informations[userid].append(Learning.database.getuserinterests(userid))  # die interessen sind als dict gespeichert
+
+        article_informations = {}
+        for id in articleids:
+            article_informations[id] = Learning.database.getarticleinformations(id)
+
+
+        print('learning for ' + str(userid))
+        results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
+        for articleid in results:
+            score = results[articleid]
+            if score > 0.0001:
+                Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
 
 
