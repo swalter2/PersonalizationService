@@ -6,6 +6,7 @@ import datetime
 from database import Database
 from learning import Learning
 from xmlimporter import XMLImporter
+from events import Event
 
 
 host = 'localhost'
@@ -59,4 +60,8 @@ for the_file in os.listdir(filename.replace('.zip','')):
         print(e)
 os.remove(filename)
 os.rmdir(filename.replace('.zip',''))
+
+#initialize and load new NW-Events
+event = Event()
+
 print('done with all')

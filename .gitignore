@@ -7,3 +7,5 @@
 *.pyc
 
 *.tmp
+
+Service/nw_kognihome.xml
