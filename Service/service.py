@@ -5,7 +5,6 @@ from learning import Learning
 import sys
 import datetime
 
-
 service = Flask(__name__)
 
 ONLY_PERSONS = 0
@@ -19,6 +18,7 @@ db = 'wikipedia_new'
 
 today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
+
 
 
 #json-{"age":" 25","educationlevel":" Hochschulabschluss",
@@ -66,12 +66,12 @@ def update_user():
             database = Database(host, user, password, db)
             if 'personid' in json_input:
                 person_id = json_input['personid']
-                database.updateUser(json_input)
+                database.update_user(json_input)
                 learning = Learning(host, user, password, db, datum)
                 learning.single_learn(person_id)
                 print("done with user update")
             else:
-                person_id = database.addUser(json_input)
+                person_id = database.add_user(json_input)
                 learning = Learning(host, user, password, db, datum)
                 learning.single_learn(person_id)
                 print("done with adding new user")
@@ -90,7 +90,7 @@ def update_user():
 def get_articles_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        print("Input:", json_input)
+        #print("Input:", json_input)
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])
@@ -120,4 +120,4 @@ def get_articles_for_id():
 
 
 if __name__ == '__main__':
-    service.run(debug=True)
+    service.run(debug=False)

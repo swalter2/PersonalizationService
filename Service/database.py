@@ -2,6 +2,8 @@
 import pymysql.cursors
 import sys
 from textblob_de.lemmatizers import PatternParserLemmatizer
+from events import Event
+from rezepte import Rezept
 
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
@@ -14,6 +16,8 @@ class Database:
     results_personen = {}
     results_ohne_personen = {}
     _lemmatizer = ''
+    event = Event()
+    rezept = Rezept()
 
 
     def __init__(self, host, user, password, db):
@@ -776,33 +780,43 @@ class Database:
         return ages
 
     @staticmethod
-    def getpersonalizedevents(id):
-        return {}
+    def getpersonalizedevents(personid):
+        interests_raw = Database.getuserinterests(personid)
+        interests = []
+        for interest_id in interests_raw:
+            interest = interests_raw[interest_id]
+            score = interest['score']
+            # for old users, make sure score is not below 1
+            if score < 1:
+                score = round(score*10.0)
+            if score >= 3:
+                interests.append(interest['name'])
+        return Database.event.get_events(interests)
 
     @staticmethod
-    def getpersonalizedrecipes(id):
-        return {}
+    def getpersonalizedrecipes(personid):
+        return Database.rezept.get_rezept()
 
     @staticmethod
-    def addUser(json_input):
+    def add_user(json_input):
 
         translations = {}
         translations["electro"] = "Electro"
         translations["hiphop"] = "Hip Hop"
-        translations["jazz"] =  "Jazz"
-        translations["metal"] =  "Metal"
-        translations["other_music"] =  "Musik"
-        translations["pop"] =  "Pop"
-        translations["rock"] =  "Rock"
+        translations["jazz"] = "Jazz"
+        translations["metal"] = "Metal"
+        translations["other_music"] = "Musik"
+        translations["pop"] = "Pop"
+        translations["rock"] = "Rock"
         translations["basketball"] = "Basketball"
-        translations["cycling"] =  "Fahhrad fahren"
-        translations["golf"] =  "Golf"
-        translations["handball"] =  "Handball"
-        translations["others_sport"] =  "Sport"
-        translations["riding"] =  "Reiten"
-        translations["soccer"] =  "Fußball"
-        translations["swimming"] =  "Schwimmen"
-        translations["tennis"] =  "Tennis"
+        translations["cycling"] = "Fahhrad fahren"
+        translations["golf"] = "Golf"
+        translations["handball"] = "Handball"
+        translations["others_sport"] = "Sport"
+        translations["riding"] = "Reiten"
+        translations["soccer"] = "Fußball"
+        translations["swimming"] = "Schwimmen"
+        translations["tennis"] = "Tennis"
         translations["wintersport"] = "Wintersport"
 
 
@@ -861,7 +875,7 @@ class Database:
             return -1
 
     @staticmethod
-    def updateUser(json_input):
+    def update_user(json_input):
         translations = {}
         translations["electro"] = "Electro"
         translations["hiphop"] = "Hip Hop"
