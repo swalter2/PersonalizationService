@@ -84,6 +84,25 @@ def update_user():
     else:
         return "415 Unsupported Media Type ;)"
 
+@service.route('/feedback', methods=['POST'])
+def give_feedback():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        print(json_input)
+        try:
+            person_id = json_input['personid']
+            article_id = json_input['articleid']
+            feedback = json_input['feedback']
+            database = Database(host, user, password, db)
+            database.update_feedback(person_id, article_id, feedback)
+            return jsonify({"personid": person_id})
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
+
 
 #curl http://localhost:5000/service/\?personid\='1'
 @service.route('/service', methods=['POST'])

@@ -949,6 +949,18 @@ class Database:
             print("Unexpected error:", sys.exc_info()[0])
             return -1
 
+    @staticmethod
+    def update_feedback(personid,articleid,feedback):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO feedback (id,nutzerid,feedback) VALUES (%s,%s,%s);"
+                cursor.execute(sql, (articleid, personid, feedback))
+                Database.connection.commit()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+
+
 
 
 
