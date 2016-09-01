@@ -950,15 +950,58 @@ class Database:
             return -1
 
     @staticmethod
+    def add_to_permant_tables(personid,articleid,feedback):
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO feedback_permanent (id,nutzerid,feedback) VALUES (%s,%s,%s);"
+                cursor.execute(sql, (articleid, personid, feedback))
+                Database.connection.commit()
+
+            id = ''
+            titel = ''
+            text = ''
+            tags = ''
+            datum = ''
+            ressort = ''
+            seite = ''
+            anzahl_woerter = ''
+            query = 'Select distinct id,titel,text,tags,datum, ressort, seite, anzahl_woerter from artikel where id=%s;'
+            with Database.connection.cursor() as cursor:
+                cursor.execute(query, articleid)
+                for row in cursor:
+                    id = row.get('id')
+                    titel = row.get('titel')
+                    text = row.get('text')
+                    tags = row.get('tags')
+                    datum = row.get('datum')
+                    ressort = row.get('ressort')
+                    seite = row.get('seite')
+                    anzahl_woerter = row.get('anzahl_woerter')
+            with Database.connection.cursor() as cursor:
+                sql = "INSERT INTO artikel_permanent (id,titel,text,tags,datum, ressort, seite, anzahl_woerter) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
+                cursor.execute(sql, (id, titel, text, tags, datum, ressort, seite, anzahl_woerter))
+                Database.connection.commit()
+
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            with Database.connection.cursor() as cursor:
+                sql = 'DELETE FROM feedback_permanent WHERE nutzerid=%s and id=%s;'
+                cursor.execute(sql, (personid,articleid))
+                Database.connection.commit()
+            raise
+
+    @staticmethod
     def update_feedback(personid,articleid,feedback):
         try:
             with Database.connection.cursor() as cursor:
-                sql = "INSERT INTO feedback (id,nutzerid,feedback) VALUES (%s,%s,%s);"
+                sql = "INSERT INTO feedback_tmp (id,nutzerid,feedback) VALUES (%s,%s,%s);"
                 cursor.execute(sql, (articleid, personid, feedback))
                 Database.connection.commit()
+                Database.add_to_permant_tables(personid,articleid,feedback)
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
+
 
 
 
