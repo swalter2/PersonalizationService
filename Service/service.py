@@ -66,15 +66,21 @@ def update_user():
             database = Database(host, user, password, db)
             if 'personid' in json_input:
                 person_id = json_input['personid']
-                database.update_user(json_input)
-                learning = Learning(host, user, password, db, datum)
-                learning.single_learn(person_id)
-                print("done with user update")
+                result = database.update_user(json_input,person_id)
+                if result == -1:
+                    return "500 - error in json input"
+                else:
+                    learning = Learning(host, user, password, db, datum)
+                    learning.single_learn(person_id)
+                    print("done with user update")
             else:
                 person_id = database.add_user(json_input)
-                learning = Learning(host, user, password, db, datum)
-                learning.single_learn(person_id)
-                print("done with adding new user")
+                if person_id == -1:
+                    return "500 - error in json input"
+                else:
+                    learning = Learning(host, user, password, db, datum)
+                    learning.single_learn(person_id)
+                    print("done with adding new user")
             database.close()
             return jsonify({"personid":person_id})
         except:

@@ -798,7 +798,7 @@ class Database:
         return Database.rezept.get_rezept()
 
     @staticmethod
-    def add_user(json_input):
+    def add_user(json_input, person_id = ''):
 
         translations = {}
         translations["electro"] = "Electro"
@@ -820,133 +820,79 @@ class Database:
         translations["wintersport"] = "Wintersport"
 
 
-        person_ids = Database.getuserids()
-        person_id = max(person_ids)+1
-
-        interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
-        interest_rating = interest_rating[0]
-
-        interessen_sport_list = interest_rating['interest_sports']
-        interessen_sport_hm = interessen_sport_list[0]
-        interessen_sport = 0
-        for sport in interessen_sport_hm:
-            interessen_sport += int(interessen_sport_hm[sport])
-        interessen_sport = round(interessen_sport/(len(interessen_sport_hm)+0.0))
-
-        interessen_lokales = interest_rating['localnews']
-
-        interessen_politik = interest_rating['politics']
-
-        geschlecht = "m"
-        if json_input['sex'] == 'Weiblich':
-            geschlecht = 'w'
-
-        abschluss = json_input['educationlevel']
-
-        #interessen_kultur fehlt
-        #interessen_lokalsport fehlt
-
-        interessen_vector = {}
-        for sport in interessen_sport_hm:
-            interessen_vector[translations[sport]] = interessen_sport_hm[sport]
-
-        interessen_musik_list = interest_rating['interest_musics']
-        interessen_musik_hm = interessen_musik_list[0]
-        for musik in interessen_musik_hm:
-            interessen_vector[translations[musik]] = interessen_musik_hm[musik]
-
-        print(interessen_vector)
-
         try:
+            if person_id == '':
+                person_ids = Database.getuserids()
+                person_id = max(person_ids)+1
+            else:
+                pass
 
-            with Database.connection.cursor() as cursor:
-                sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
-                      "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
-                      "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-                cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0"))
-                Database.connection.commit()
+            interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
+            interest_rating = interest_rating[0]
 
-            for interesse in interessen_vector:
-                Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
+            interessen_sport_list = interest_rating['interest_sports']
+            interessen_sport_hm = interessen_sport_list[0]
+            interessen_sport = 0
+            for sport in interessen_sport_hm:
+                interessen_sport += int(interessen_sport_hm[sport])
+            interessen_sport = round(interessen_sport/(len(interessen_sport_hm)+0.0))
 
-            return person_id
+            interessen_lokales = int(interest_rating['localnews'])
+
+            interessen_politik = int(interest_rating['politics'])
+
+            geschlecht = "m"
+            if json_input['sex'] == 'Weiblich':
+                geschlecht = 'w'
+
+            abschluss = json_input['educationlevel']
+
+            if ' ' in abschluss:
+                return -1
+
+
+
+            #interessen_kultur fehlt
+            #interessen_lokalsport fehlt
+
+            interessen_vector = {}
+            for sport in interessen_sport_hm:
+                interessen_vector[translations[sport]] = interessen_sport_hm[sport]
+
+            interessen_musik_list = interest_rating['interest_musics']
+            interessen_musik_hm = interessen_musik_list[0]
+            for musik in interessen_musik_hm:
+                interessen_vector[translations[musik]] = int(interessen_musik_hm[musik])
+
+            print(interessen_vector)
+
+            try:
+
+                with Database.connection.cursor() as cursor:
+                    sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
+                          "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
+                          "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                    cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0"))
+                    Database.connection.commit()
+
+                for interesse in interessen_vector:
+                    Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
+
+                return person_id
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                return -1
         except:
-            print("Unexpected error:", sys.exc_info()[0])
+            #do not add user but return -1
             return -1
 
     @staticmethod
-    def update_user(json_input):
-        translations = {}
-        translations["electro"] = "Electro"
-        translations["hiphop"] = "Hip Hop"
-        translations["jazz"] =  "Jazz"
-        translations["metal"] =  "Metal"
-        translations["other_music"] =  "Musik"
-        translations["pop"] =  "Pop"
-        translations["rock"] =  "Rock"
-        translations["basketball"] = "Basketball"
-        translations["cycling"] =  "Fahhrad fahren"
-        translations["golf"] =  "Golf"
-        translations["handball"] =  "Handball"
-        translations["others_sport"] =  "Sport"
-        translations["riding"] =  "Reiten"
-        translations["soccer"] =  "Fußball"
-        translations["swimming"] =  "Schwimmen"
-        translations["tennis"] =  "Tennis"
-        translations["wintersport"] = "Wintersport"
-
-        person_id = json_input['personid']
-
-        interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
-        interest_rating = interest_rating[0]
-
-        interessen_sport_list = interest_rating['interest_sports']
-        interessen_sport_hm = interessen_sport_list[0]
-        interessen_sport = 0
-        for sport in interessen_sport_hm:
-            interessen_sport += int(interessen_sport_hm[sport])
-        interessen_sport = round(interessen_sport/(len(interessen_sport_hm)+0.0))
-
-        interessen_lokales = interest_rating['localnews']
-
-        interessen_politik = interest_rating['politics']
-
-        geschlecht = "m"
-        if json_input['sex'] == 'Weiblich':
-            geschlecht = 'w'
-
-        abschluss = json_input['educationlevel']
-
-        #interessen_kultur fehlt
-        #interessen_lokalsport fehlt
-
-        interessen_vector = {}
-        for sport in interessen_sport_hm:
-            interessen_vector[translations[sport]] = interessen_sport_hm[sport]
-
-        interessen_musik_list = interest_rating['interest_musics']
-        interessen_musik_hm = interessen_musik_list[0]
-        for musik in interessen_musik_hm:
-            interessen_vector[translations[musik]] = interessen_musik_hm[musik]
-
-        Database.deleteuser(person_id)
-        print("deleted user with id:" +str(person_id))
-
-        try:
-
-            with Database.connection.cursor() as cursor:
-                sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
-                      "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
-                      "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-                cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0")) #3 is "neutral
-                Database.connection.commit()
-
-            for interesse in interessen_vector:
-                Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
-
-            return person_id
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
+    def update_user(json_input, person_id):
+        if Database.check_if_user_exists(person_id):
+            Database.deleteuser(person_id)
+            print("deleted user with id:" +str(person_id))
+            return Database.add_user(json_input,person_id)
+        else:
             return -1
 
     @staticmethod
@@ -1001,6 +947,14 @@ class Database:
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
+
+    @classmethod
+    def check_if_user_exists(cls, person_id):
+        informations = Database.getuserinformations(person_id)
+        if len(informations) == 0:
+            return False
+        else:
+            return True
 
 
 

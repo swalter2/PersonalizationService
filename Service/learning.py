@@ -244,6 +244,6 @@ class Learning:
             cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             predicted_value =  Learning.prediction(cos_similarity, user, articles[article_id])
-            if predicted_value > 0.0:
+            if predicted_value > 0.1:
                 results[article_id] = predicted_value;
         return results
