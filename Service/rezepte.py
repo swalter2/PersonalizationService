@@ -20,7 +20,7 @@ class Rezept:
                                  'Zum Schluss die Brechbohnen vorsichtig unterrühren. Kurz aufkochen lassen und dann ' \
                                  'noch ca. 10 Minuten zugedeckt ziehen lassen. Dazu passen einfache Brötchen oder Baguette. '
         zutaten = {}
-        mett = {'name':'Mett','menge':'1Kg','preis':'2,19','anbieter':'Real'}
+        mett = {'name':'Mett','menge':'1Kg','preis':'2.19','anbieter':'Real'}
         zwiebel = {'name': 'Zwiebel', 'menge': '0.5Kg', 'preis': '0.99', 'anbieter': 'Rewe'}
         tomatenmark = {'name': 'Tomatenmark', 'menge': '1 Tube', 'preis': '0.49', 'anbieter': 'Aldi'}
         tomatensaft = {'name': 'Tomatensaft', 'menge': '2 Packungen', 'preis': '3.00', 'anbieter': 'Real'}
