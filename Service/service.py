@@ -72,7 +72,8 @@ def update_user():
                 else:
                     learning = Learning(host, user, password, db, datum)
                     learning.single_learn(person_id)
-                    print("done with user update")
+                    print("done with user update with id ",person_id)
+                    sys.stdout.flush()
             else:
                 person_id = database.add_user(json_input)
                 if person_id == -1:
