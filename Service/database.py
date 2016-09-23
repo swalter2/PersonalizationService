@@ -847,6 +847,8 @@ class Database:
 
             abschluss = json_input['educationlevel']
 
+            if abschluss == 'Hochschulreife':
+                abschluss = 'Abitur'
             if ' ' in abschluss:
                 return -1
 
