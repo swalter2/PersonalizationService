@@ -74,6 +74,7 @@ def update_user():
                     learning = Learning(host, user, password, db, datum)
                     learning.single_learn(person_id)
                     print("done with user update with id ",person_id)
+                    learning.close()
                     sys.stdout.flush()
             else:
                 person_id = database.add_user(json_input)
@@ -83,6 +84,7 @@ def update_user():
                 else:
                     learning = Learning(host, user, password, db, datum)
                     learning.single_learn(person_id)
+                    learning.close()
                     print("done with adding new user")
             database.close()
             return jsonify({"personid":person_id})

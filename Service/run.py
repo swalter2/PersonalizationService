@@ -48,6 +48,7 @@ print('start global learning')
 learning = Learning(host, user, password, db, datum)
 learning.global_learn()
 print('done global learning')
+learning.close()
 
 
 for the_file in os.listdir(filename.replace('.zip','')):
