@@ -68,6 +68,7 @@ def update_user():
                 person_id = json_input['personid']
                 result = database.update_user(json_input,person_id)
                 if result == -1:
+                    database.close()
                     return "500 - error in json input"
                 else:
                     learning = Learning(host, user, password, db, datum)
@@ -77,6 +78,7 @@ def update_user():
             else:
                 person_id = database.add_user(json_input)
                 if person_id == -1:
+                    database.close()
                     return "500 - error in json input"
                 else:
                     learning = Learning(host, user, password, db, datum)
@@ -85,6 +87,7 @@ def update_user():
             database.close()
             return jsonify({"personid":person_id})
         except:
+            database.close()
             print("Unexpected error:", sys.exc_info()[0])
             raise
             return "500 - error in json input"
@@ -102,9 +105,11 @@ def give_feedback():
             feedback = json_input['feedback']
             database = Database(host, user, password, db)
             database.update_feedback(person_id, article_id, feedback)
+            database.close()
             return jsonify({"personid": person_id})
         except:
             print("Unexpected error:", sys.exc_info()[0])
+            database.close()
             raise
             return "500 - error in json input"
     else:
@@ -138,6 +143,7 @@ def get_articles_for_id():
             database.close()
             return jsonify(results)
         except:
+            database.close()
             print("500 - error in json input")
             return "500 - error in json input"
     else:
