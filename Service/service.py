@@ -89,7 +89,6 @@ def update_user():
             database.close()
             return jsonify({"personid":person_id})
         except:
-            database.close()
             print("Unexpected error:", sys.exc_info()[0])
             raise
             return "500 - error in json input"
@@ -111,7 +110,6 @@ def give_feedback():
             return jsonify({"personid": person_id})
         except:
             print("Unexpected error:", sys.exc_info()[0])
-            database.close()
             raise
             return "500 - error in json input"
     else:
@@ -145,7 +143,6 @@ def get_articles_for_id():
             database.close()
             return jsonify(results)
         except:
-            database.close()
             print("500 - error in json input")
             return "500 - error in json input"
     else:
