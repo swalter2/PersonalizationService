@@ -31,7 +31,8 @@ class Database:
         Database._lemmatizer = PatternParserLemmatizer()
 
     def close(self):
-        Database.connection.close()
+        #this line thros an error....
+        self.connection.close()
 
     @staticmethod
     def getarticlesfromwikipedia(mode, term, limit=0):
