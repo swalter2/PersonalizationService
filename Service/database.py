@@ -32,7 +32,8 @@ class Database:
 
     def close(self):
         #this line thros an error....
-        self.connection.close()
+        #self.connection.close()
+        pass
 
     @staticmethod
     def getarticlesfromwikipedia(mode, term, limit=0):
