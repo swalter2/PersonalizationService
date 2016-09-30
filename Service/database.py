@@ -884,9 +884,12 @@ class Database:
                 return person_id
             except:
                 print("Unexpected error:", sys.exc_info()[0])
+                raise
                 return -1
         except:
             #do not add user but return -1
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
             return -1
 
     @staticmethod
