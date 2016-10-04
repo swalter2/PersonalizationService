@@ -880,7 +880,7 @@ class Database:
 
                 for interesse in interessen_vector:
                     Database._tmp_add_interesse(person_id, interesse, interessen_vector[interesse])
-
+                print('added user with id '+str(person_id))
                 return person_id
             except:
                 print("Unexpected error:", sys.exc_info()[0])
