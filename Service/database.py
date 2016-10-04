@@ -868,7 +868,6 @@ class Database:
             for musik in interessen_musik_hm:
                 interessen_vector[translations[musik]] = int(interessen_musik_hm[musik])
 
-            print(interessen_vector)
 
             try:
 

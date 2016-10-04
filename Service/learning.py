@@ -169,7 +169,9 @@ class Learning:
 
     @staticmethod
     def single_learn(userid):
-        articleids = Learning.database.getarticleidsfordate(Learning.date)
+        #rticleids = Learning.database.getarticleidsfordate(Learning.date)
+        articleids = Learning.database.getarticleidswithoutdate()
+
 
         user_informations = {}
         user_informations[userid] = Learning.database.getuserinformations(userid)  # die userinformations die von der DB kommen sind eine Liste
