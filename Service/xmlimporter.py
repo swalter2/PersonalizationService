@@ -26,6 +26,7 @@ class XMLImporter:
         #results = []
         processed_pdf = set()
         tree = ET.parse(file)
+        print('parsed file')
         for artikel in tree.iter(tag='artikel'):
             artikel_id = ""
             artikel_text = ""
@@ -47,7 +48,7 @@ class XMLImporter:
                     if e.tag == "text":
                         for text in e:
                             if text.tag == "absatz":
-                                artikel_text = " "+str(text.text)
+                                artikel_text += " "+str(text.text)
                             if text.tag == "abbildung":
                                 artikel_abbildung.add(str(text.text))
 
