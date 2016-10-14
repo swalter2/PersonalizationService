@@ -24,7 +24,7 @@ datum = today.strftime("%d%m%Y")
 #datum = '21032016'
 
 url = "http://ftp.forschungsdatenmanagement.org/nw/8586833-Kogni-"+datum+".zip"
-#print(url)
+print(url)
 filename = wget.download(url)
 #filename = "8586833-Kogni-"+datum+".zip"
 print(filename)
@@ -34,9 +34,15 @@ with zipfile.ZipFile(filename, 'r') as z:
 print('extracted file')
 
 file_to_import = filename.replace('.zip','')+"/"+filename.replace('.zip', '.xml')
+
 if os.path.isfile(file_to_import):
-    print(file_to_import)
     importer.read_xml_file(file_to_import)
+else:
+    file_to_import = filename.replace('.zip', '') + "/" + filename.replace('.zip', '.xml').replace('Kogni','NW')
+    if os.path.isfile(file_to_import):
+        importer.read_xml_file(file_to_import)
+    else:
+        print('file not found')
 print('imported everything to DB')
 
 
