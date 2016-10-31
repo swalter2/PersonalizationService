@@ -851,8 +851,7 @@ class Database:
 
             if abschluss == 'Hochschulreife':
                 abschluss = 'Abitur'
-            if ' ' in abschluss:
-                return -1
+            abschluss = abschluss.strip()
 
 
 
@@ -867,8 +866,6 @@ class Database:
             interessen_musik_hm = interessen_musik_list[0]
             for musik in interessen_musik_hm:
                 interessen_vector[translations[musik]] = int(interessen_musik_hm[musik])
-
-
             try:
 
                 with Database.connection.cursor() as cursor:
