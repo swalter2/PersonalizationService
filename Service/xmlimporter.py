@@ -85,8 +85,7 @@ class XMLImporter:
                     and 'TERMIN-KALENDER' not in artikel_titel \
                     and 'Öffnungszeiten' not in artikel_titel\
                     and 'TERMIN- KALENDER' not in artikel_titel\
-                    and artikel_text not in XMLImporter.text_hm\
-                    and len(artikel_text.split(" "))>50:
+                    and artikel_text not in XMLImporter.text_hm:
 
                 tags = combine_noun_adjectives(XMLImporter._lemmatizer.lemmatize(artikel_text))
                 tags = tags.strip()
