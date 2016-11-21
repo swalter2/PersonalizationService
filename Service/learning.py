@@ -163,7 +163,7 @@ class Learning:
             results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
             for articleid in results:
                 score = results[articleid]
-                if score > 0.0001:
+                if score > 0.000001:
                     Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
     @staticmethod
@@ -245,6 +245,5 @@ class Learning:
             cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             predicted_value =  Learning.prediction(cos_similarity, user, articles[article_id])
-            if predicted_value > 0.1:
-                results[article_id] = predicted_value;
+            results[article_id] = predicted_value;
         return results
