@@ -122,14 +122,13 @@ class Learning:
             print("Unexpected error:", sys.exc_info()[0])
             raise
             value = 0.0
-        if value > 0.95 and cos > 0.0:
-            return (value+cos)/2
+        if cos == 0.0 and value != 0.0:
+            return value
+        elif cos != 0.0 and value == 0.0:
+            return cos
         else:
-            if cos == 0.0 and value > 0.90:
-                return value
+            (value+cos)/2
 
-        #default
-        return cos
 
     @staticmethod
     def global_learn():
