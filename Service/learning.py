@@ -190,8 +190,7 @@ class Learning:
         results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
         for articleid in results:
             score = results[articleid]
-            if score > 0.0001:
-                Learning.database.add_personalization_all_userarticle(userid, articleid, score)
+            Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
 
 
