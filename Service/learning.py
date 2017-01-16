@@ -9,6 +9,8 @@ from itertools import islice
 import pickle
 import numpy as np
 from feature import *
+import matplotlib.pyplot as plt
+import os
 
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
@@ -59,7 +61,7 @@ class Learning:
             pass
 
     @staticmethod
-    def prediction(cos, user, article):
+    def prediction(cos, user, article, alpha = 0.5, beta = 0.5):
         feature = {}
 
         normalized_article_ressort = ressort_mapping(article[2])
@@ -69,7 +71,8 @@ class Learning:
 
         feature.update(normalized_ressort_dict_article)
         #page prior feature
-        feature.update(normalize_pages(article[3]))
+        page = article[3]
+        feature.update(normalize_pages(page))
         #prior-infos about user
         feature.update(user_information_vector(user))
         #user-spezific comparison of interests with text and title
@@ -122,12 +125,21 @@ class Learning:
             print("Unexpected error:", sys.exc_info()[0])
             raise
             value = 0.0
-        if cos == 0.0 and value != 0.0:
-            return value
-        elif cos != 0.0 and value == 0.0:
-            return cos
-        else:
-            (value+cos)/2
+
+        relevance = 1 / float(page)
+        esa_score = cos
+        svm_score = value
+
+        score = (1 - alpha - beta) * relevance + alpha * svm_score + beta * esa_score
+
+        return score, relevance, esa_score, svm_score
+
+        # if cos == 0.0 and value != 0.0:             #cos refers to the esa-value and value refers to the svm-prediction_probability
+        #     return value
+        # elif cos != 0.0 and value == 0.0:
+        #     return cos
+        # else:
+        #     (value+cos)/2
 
 
     @staticmethod
@@ -204,23 +216,23 @@ class Learning:
     # extend to person ID, load from database such things like age etc
     @staticmethod
     def learn(interests, list_article_ids, userid, mode, user, articles):
-        interest_vector_user = Learning.database.getuserinterestvector(userid, mode)
+        interest_vector_user = Learning.database.getuserinterestvector(userid, mode)        #get all interests for a user
         if len(interests)>0:
 
-            for i in interests:
+            for i in interests:     #iterate over interests
                 interest_input = ""
-                for term, tag in Learning._lemmatizer.lemmatize(i):
+                for term, tag in Learning._lemmatizer.lemmatize(i):     #concatenate interests
                     interest_input += " "+term
                 interest_input = interest_input.strip()
-                tmp_vector = Learning.database.getinterestvectorforterm(interest_input,mode)
-                if len(tmp_vector)==0:
-                    tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
+                tmp_vector = Learning.database.getinterestvectorforterm(interest_input,mode)    #get presaved esa_vec for concatenated interests
+                if len(tmp_vector)==0:      #if no wikipediaarticles were saved for given interests
+                    tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)   #get new esa_vec
                     for wikipediaid in tmp_vector:
-                        if wikipediaid in interest_vector_user:
+                        if wikipediaid in interest_vector_user:     #if wiki_id already in the interest_vector of the user
                             # in the moment only addition of the scores, maybe also try averaging of the scores
                             tmp = interest_vector_user[wikipediaid]
-                            interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*float(interests[i])
-                        else:
+                            interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*float(interests[i])     #add new score to the old score
+                        else:       #if wiki_id not in user_vector
                             if float(interests[i]) > 0.1:
                                 interest_vector_user[wikipediaid] = (tmp_vector[wikipediaid]+0.0)*float(interests[i])
                 else:
@@ -236,6 +248,9 @@ class Learning:
             reduced_sorted_interest_vector_hm[x] = y
 
         results = {}
+        esa_scores = []
+        svm_scores = []
+        relevances = []
         for article_id in list_article_ids:
             article_vector = {}
             article_vector = Learning.database.getarticlevector(article_id, mode)
@@ -249,6 +264,20 @@ class Learning:
 
             cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
-            predicted_value =  Learning.prediction(cos_similarity, user, articles[article_id])
+            predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user, articles[article_id])
             results[article_id] = predicted_value;
+
+            esa_scores.append(esa_score)
+            svm_scores.append(svm_score)
+            relevances.append(relevance)
+            analyze_score_distribution(esa_scores,"esa_scores")
+            analyze_score_distribution(svm_scores,"svm_scores")
+            analyze_score_distribution(relevances,"relevances")
+
         return results
+
+def analyze_score_distribution(arr, filename):
+    if not "plots" in os.listdir("."):
+        os.mkdir("./" + "plots")
+    plt.hist(arr, bins=10)
+    plt.savefig("plots/" + filename + ".png")

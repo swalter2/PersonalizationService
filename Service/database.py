@@ -260,7 +260,7 @@ class Database:
         try:
             with Database.connection.cursor() as cursor:
                 sql = 'SELECT articleid, score, titel, text FROM personalisierung_alle, artikel WHERE userid=%s ' \
-                      'and artikel.id=articleid ORDER BY score DESC LIMIT 20;'
+                      'and artikel.id=articleid ORDER BY score DESC LIMIT 20;'              #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
                 cursor.execute(sql,personid)
                 for row in cursor:
                     tmp_hm = {}
