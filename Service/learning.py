@@ -11,6 +11,14 @@ import numpy as np
 from feature import *
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
+
+DEBUG = False
+ESA_SCORES = []
+SVM_SCORES = []
+RELEVANCES = []
+
+GENERAL_SCORE = []
 
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
@@ -126,11 +134,16 @@ class Learning:
             raise
             value = 0.0
 
-        relevance = 1 / float(page)
+        relevance = 1 / float(page)         #inverse of the page
         esa_score = cos
         svm_score = value
 
-        score = (1 - alpha - beta) * relevance + alpha * svm_score + beta * esa_score
+        #normalize the scores
+        normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)
+        normalized_esa_score = z_normalization(esa_score, mean = 0.0009855744806407337, var = 7.961933559635215e-05)
+        normalized_svm_score = z_normalization(svm_score, mean = 0.5833671193911723, var = 0.05558054791068003)
+
+        score = (1 - alpha - beta) * normalized_relevance + alpha * normalized_esa_score + beta * normalized_svm_score
 
         return score, relevance, esa_score, svm_score
 
@@ -144,22 +157,43 @@ class Learning:
 
     @staticmethod
     def global_learn():
+        print("Starting global_learn")
         #Learning.database.deleteuserinterestvector()
         userids = Learning.database.getuserids()
+        #if DEBUG:
+         #   articleids = Learning.database.getarticleidsfordate(datetime.strptime("09052016", "%d%m%Y"))
+        #else:
         articleids = Learning.database.getarticleidsfordate(Learning.date)
 
-        user_informations = {}
-        for id in userids:
-            user_informations[id] = Learning.database.getuserinformations(id) #die userinformations die von der DB kommen sind eine Liste
-            user_informations[id].append(Learning.database.getuserinterests(id)) #die interessen sind als dict gespeichert
-
         article_informations = {}
+        if DEBUG: print("list_article_ids = {} for date {}".format(articleids,Learning.date))
+
         for id in articleids:
             article_informations[id] = Learning.database.getarticleinformations(id)
 
-
+        user_informations = {}
         for userid in userids:
-            print('learning for '+str(userid))
+            print("Learning for User {}".format(userid))
+            user_informations[userid] = Learning.database.getuserinformations(userid) #die userinformations die von der DB kommen sind eine Liste
+            user_informations[userid].append(Learning.database.getuserinterests(userid)) #die interessen sind als dict gespeichert
+
+            results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid], article_informations)
+            for articleid in results:
+                score = results[articleid]
+                try:
+                    if score > 0.000001:
+                        Learning.database.add_personalization_all_userarticle(userid, articleid, score)
+                except:
+                    pass
+                    #happens only if none value is given.
+        analyze_score_distribution(ESA_SCORES, "ESA_SCORES")
+        analyze_score_distribution(SVM_SCORES, "SVM_SCORES")
+        analyze_score_distribution(RELEVANCES, "RELEVANCES")
+        analyze_score_distribution(GENERAL_SCORE, "GENERAL")
+
+
+        # for userid in userids:
+        #     print('learning for '+str(userid))
             # results = Learning.learn({}, articleids, userid, ONLY_PERSONS, user_informations[userid],article_informations)
             # for articleid in results:
             #     score = results[articleid]
@@ -172,15 +206,6 @@ class Learning:
             #     if score > 0.0:
             #         Learning.database.add_personalization_without_person_userarticle(userid, articleid, score)
 
-            results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
-            for articleid in results:
-                score = results[articleid]
-                try:
-                    if score > 0.000001:
-                        Learning.database.add_personalization_all_userarticle(userid, articleid, score)
-                except:
-                    pass
-                    #happens only if none value is given.
 
 
     @staticmethod
@@ -241,6 +266,7 @@ class Learning:
                             interest_vector_user[wikipediaid] = interest_vector_user[wikipediaid]*float(interests[i])
                         else:
                             interest_vector_user[wikipediaid] = tmp_vector[wikipediaid] * float(interests[i])
+
         sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
         reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, VECTOR_SIZE))
         reduced_sorted_interest_vector_hm = {}
@@ -266,18 +292,34 @@ class Learning:
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user, articles[article_id])
             results[article_id] = predicted_value;
-
+            if DEBUG: print(predicted_value, relevance, esa_score, svm_score)
             esa_scores.append(esa_score)
             svm_scores.append(svm_score)
             relevances.append(relevance)
-            analyze_score_distribution(esa_scores,"esa_scores")
-            analyze_score_distribution(svm_scores,"svm_scores")
-            analyze_score_distribution(relevances,"relevances")
+            ESA_SCORES.append(esa_score)
+            SVM_SCORES.append(svm_score)
+            RELEVANCES.append(relevance)
+            GENERAL_SCORE.append(predicted_value)
+
+        analyze_score_distribution(esa_scores,"esa_scores")
+        analyze_score_distribution(svm_scores,"svm_scores")
+        analyze_score_distribution(relevances,"relevances")
+
 
         return results
 
 def analyze_score_distribution(arr, filename):
     if not "plots" in os.listdir("."):
         os.mkdir("./" + "plots")
+    mean = np.mean(arr)
+    var = np.var(arr)
+    plt.clf()
+    plt.title("mean = {}, var = {}".format(mean,var))
     plt.hist(arr, bins=10)
     plt.savefig("plots/" + filename + ".png")
+   # print(arr)
+    #print("{}:\tMean = {}\tVar = {}".format(filename,np.mean(arr),np.var(arr)))
+
+def z_normalization(x, mean, var):
+    z = (x - mean) / var
+    return z
