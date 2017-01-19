@@ -20,6 +20,10 @@ today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
 
 
+# die aktuelle URL
+# curl -X POST --data "{\"personid\":\"116\"}"  http://kognihome.sebastianwalter.org/service --header "Content-type:application/json"
+#
+
 
 #json-{"age":" 25","educationlevel":" Hochschulabschluss",
 # "interestratings":[{"culture":"3",
@@ -148,6 +152,59 @@ def get_articles_for_id():
     else:
         return "415 Unsupported Media Type ;)"
 
+#get all articles of a given date
+@service.route('/serviceArticles', methods=['POST'])
+def get_articles_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+
+        try:
+            date = json_input['datum']
+        except:
+            date = datum
+
+        try:
+            number_articles = json_input['anzahl_artikel']
+        except:
+            pass
+
+        try:
+            database = Database(host, user, password, db)
+            results = {}
+
+            articleIds = database.getarticleidsfordate(date)
+
+            results['artikel'] = articleIds
+
+            database.close()
+            return jsonify(results)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
+
+#get get personalization of all articles for a given date
+@service.route('/servicePersonalization', methods=['POST'])
+def get_articles_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        #print("Input:", json_input)
+        try:
+            database = Database(host, user, password, db)
+            personid = int(json_input['personid'])
+            results = {}
+
+            result = database.getpersonalizedarticles_justids(personid)
+            results['artikel'] = result
+
+            database.close()
+            return jsonify(results)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
 
 
 if __name__ == '__main__':
