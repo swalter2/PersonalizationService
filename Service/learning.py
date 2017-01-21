@@ -69,7 +69,7 @@ class Learning:
             pass
 
     @staticmethod
-    def prediction(cos, user, article, alpha = 0.5, beta = 0.5):
+    def prediction(cos, user, article, alpha = 0.5, beta = 0.5, z_norm=True):
         feature = {}
 
         normalized_article_ressort = ressort_mapping(article[2])
@@ -138,14 +138,17 @@ class Learning:
         esa_score = cos
         svm_score = value
 
-        #normalize the scores
-        normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)
-        normalized_esa_score = z_normalization(esa_score, mean = 0.0009855744806407337, var = 7.961933559635215e-05)
-        normalized_svm_score = z_normalization(svm_score, mean = 0.5833671193911723, var = 0.05558054791068003)
+        if z_norm:
+            #normalize the scores
+            normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)
+            normalized_esa_score = z_normalization(esa_score, mean = 0.0009855744806407337, var = 7.961933559635215e-05)
+            normalized_svm_score = z_normalization(svm_score, mean = 0.5833671193911723, var = 0.05558054791068003)
 
-        score = (1 - alpha - beta) * normalized_relevance + alpha * normalized_esa_score + beta * normalized_svm_score
+            score = (1 - alpha - beta) * normalized_relevance + alpha * normalized_esa_score + beta * normalized_svm_score
+        else:
+            score = (1 - alpha - beta) * relevance + alpha * esa_score + beta * svm_score
 
-        return score, relevance, esa_score, svm_score
+        return score, normalized_relevance, normalized_esa_score, normalized_svm_score
 
         # if cos == 0.0 and value != 0.0:             #cos refers to the esa-value and value refers to the svm-prediction_probability
         #     return value
@@ -182,14 +185,15 @@ class Learning:
                 score = results[articleid]
                 try:
                     if score > 0.000001:
+                        # print("L\tInserting {}:{}:{} into DB...".format(userid,articleid,score))
                         Learning.database.add_personalization_all_userarticle(userid, articleid, score)
                 except:
                     pass
                     #happens only if none value is given.
-        analyze_score_distribution(ESA_SCORES, "ESA_SCORES")
-        analyze_score_distribution(SVM_SCORES, "SVM_SCORES")
-        analyze_score_distribution(RELEVANCES, "RELEVANCES")
-        analyze_score_distribution(GENERAL_SCORE, "GENERAL")
+        # analyze_score_distribution(ESA_SCORES, "ESA_SCORES")
+        # analyze_score_distribution(SVM_SCORES, "SVM_SCORES")
+        # analyze_score_distribution(RELEVANCES, "RELEVANCES")
+        # analyze_score_distribution(GENERAL_SCORE, "GENERAL")
 
 
         # for userid in userids:
@@ -274,9 +278,6 @@ class Learning:
             reduced_sorted_interest_vector_hm[x] = y
 
         results = {}
-        esa_scores = []
-        svm_scores = []
-        relevances = []
         for article_id in list_article_ids:
             article_vector = {}
             article_vector = Learning.database.getarticlevector(article_id, mode)
@@ -293,29 +294,27 @@ class Learning:
             predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user, articles[article_id])
             results[article_id] = predicted_value;
             if DEBUG: print(predicted_value, relevance, esa_score, svm_score)
-            esa_scores.append(esa_score)
-            svm_scores.append(svm_score)
-            relevances.append(relevance)
             ESA_SCORES.append(esa_score)
             SVM_SCORES.append(svm_score)
             RELEVANCES.append(relevance)
             GENERAL_SCORE.append(predicted_value)
 
-        analyze_score_distribution(esa_scores,"esa_scores")
-        analyze_score_distribution(svm_scores,"svm_scores")
-        analyze_score_distribution(relevances,"relevances")
-
-
+        # print(ESA_SCORES[0:100])
+        # print(SVM_SCORES[0:100])
+        # print(RELEVANCES[0:100])
+        # print(GENERAL_SCORE[0:100])
+        # quit()
         return results
 
 def analyze_score_distribution(arr, filename):
+    print("Plotting histogram for {}".format(filename))
     if not "plots" in os.listdir("."):
         os.mkdir("./" + "plots")
     mean = np.mean(arr)
     var = np.var(arr)
     plt.clf()
     plt.title("mean = {}, var = {}".format(mean,var))
-    plt.hist(arr, bins=10)
+    plt.hist(arr, bins=50)
     plt.savefig("plots/" + filename + ".png")
    # print(arr)
     #print("{}:\tMean = {}\tVar = {}".format(filename,np.mean(arr),np.var(arr)))

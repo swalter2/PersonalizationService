@@ -11,10 +11,17 @@ ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
 
+# host = 'localhost'
+# user = 'wikipedia_new'
+# password = '1234567'
+# db = 'wikipedia_new'
+
 host = 'localhost'
-user = 'wikipedia_new'
-password = '1234567'
-db = 'wikipedia_new'
+user = 'root'
+password = 'root'
+db = 'nw_esa'
+
+
 
 today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
@@ -125,7 +132,6 @@ def give_feedback():
 def get_articles_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        #print("Input:", json_input)
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])
@@ -152,9 +158,9 @@ def get_articles_for_id():
     else:
         return "415 Unsupported Media Type ;)"
 
-#get all articles of a given date
+#get all articles (ids, title, text) for a given date
 @service.route('/serviceArticles', methods=['POST'])
-def get_articles_for_id():
+def get_article_data_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
 
@@ -172,7 +178,7 @@ def get_articles_for_id():
             database = Database(host, user, password, db)
             results = {}
 
-            articleIds = database.getarticleidsfordate(date)
+            articleIds = database.getarticlesfordate(date)
 
             results['artikel'] = articleIds
 
@@ -184,12 +190,11 @@ def get_articles_for_id():
     else:
         return "415 Unsupported Media Type ;)"
 
-#get get personalization of all articles for a given date
+#get personalization in form of scores for all articles for a given user
 @service.route('/servicePersonalization', methods=['POST'])
-def get_articles_for_id():
+def get_personalization_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        #print("Input:", json_input)
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])

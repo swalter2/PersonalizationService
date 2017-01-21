@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pymysql.cursors
+import pymysql
 import sys
 from textblob_de.lemmatizers import PatternParserLemmatizer
 from events import Event
@@ -21,14 +21,18 @@ class Database:
 
 
     def __init__(self, host, user, password, db):
+        # print("Connecting to Database...")
         Database.connection = pymysql.connect(host=host,
                              user=user,
                              password=password,
                              db=db,
-                             charset='utf8',
+                             charset='utf8mb4',
+                             # port=8889,     # comment this and the next line before pushing
+                             # unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",
                              cursorclass=pymysql.cursors.DictCursor)
 
         Database._lemmatizer = PatternParserLemmatizer()
+        # print("Done")
 
     def close(self):
         #this line thros an error....
@@ -155,6 +159,7 @@ class Database:
     @staticmethod
     def add_personalization_all_userarticle(userid, articleid, score):
         #print('called add_personalization_all_userarticle')
+        # print("DB\tInserting {}:{}:{} into DB...".format(userid,articleid,score))
         try:
             with Database.connection.cursor() as cursor:
                 sql = "INSERT INTO personalisierung_alle (articleid,userid,score) VALUES (%s,%s,%s);"
@@ -274,6 +279,42 @@ class Database:
             raise
         return results
 
+    @staticmethod
+    def getpersonalizedarticles_justids(personId, number_articles=500):
+        results = {}
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT articleid, score FROM personalisierung_alle, artikel WHERE userid=%s ' \
+                      'and artikel.id=articleid ORDER BY score DESC LIMIT %s;'              #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
+                cursor.execute(sql,(personId, number_articles))
+                for row in cursor:
+                    tmp_hm = {}
+                    tmp_hm['articleid'] = row.get('articleid')
+                    tmp_hm['score'] = row.get('score')
+                    results[row.get('articleid')] = tmp_hm
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
+
+    @staticmethod
+    def getarticlesfordate(date,number_articles=500):
+        print(date, number_articles)
+        results = {}
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = 'SELECT id, titel, text FROM artikel WHERE datum= %s LIMIT %s;'          #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
+                cursor.execute(sql,(date,number_articles))
+                for row in cursor:
+                    tmp_hm = {}
+                    tmp_hm['id'] = row.get('id')
+                    tmp_hm['titel'] = row.get('titel')
+                    tmp_hm['text'] = row.get('text')
+                    results[row.get('id')] = tmp_hm
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        return results
 
     @staticmethod
     def getarticletext(articleid):
