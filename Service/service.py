@@ -11,14 +11,25 @@ ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
 
+# host = 'localhost'
+# user = 'wikipedia_new'
+# password = '1234567'
+# db = 'wikipedia_new'
+
 host = 'localhost'
-user = 'wikipedia_new'
-password = '1234567'
-db = 'wikipedia_new'
+user = 'root'
+password = 'root'
+db = 'nw_esa'
+
+
 
 today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
 
+
+# die aktuelle URL
+# curl -X POST --data "{\"personid\":\"116\"}"  http://kognihome.sebastianwalter.org/service --header "Content-type:application/json"
+#
 
 
 #json-{"age":" 25","educationlevel":" Hochschulabschluss",
@@ -121,7 +132,6 @@ def give_feedback():
 def get_articles_for_id():
     if request.headers['Content-Type'] == 'application/json':
         json_input = request.json
-        #print("Input:", json_input)
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])
@@ -148,6 +158,58 @@ def get_articles_for_id():
     else:
         return "415 Unsupported Media Type ;)"
 
+#get all articles (ids, title, text) for a given date
+@service.route('/serviceArticles', methods=['POST'])
+def get_article_data_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+
+        try:
+            date = json_input['datum']
+        except:
+            date = datum
+
+        try:
+            number_articles = json_input['anzahl_artikel']
+        except:
+            pass
+
+        try:
+            database = Database(host, user, password, db)
+            results = {}
+
+            articleIds = database.getarticlesfordate(date)
+
+            results['artikel'] = articleIds
+
+            database.close()
+            return jsonify(results)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
+
+#get personalization in form of scores for all articles for a given user
+@service.route('/servicePersonalization', methods=['POST'])
+def get_personalization_for_id():
+    if request.headers['Content-Type'] == 'application/json':
+        json_input = request.json
+        try:
+            database = Database(host, user, password, db)
+            personid = int(json_input['personid'])
+            results = {}
+
+            result = database.getpersonalizedarticles_justids(personid)
+            results['artikel'] = result
+
+            database.close()
+            return jsonify(results)
+        except:
+            print("500 - error in json input")
+            return "500 - error in json input"
+    else:
+        return "415 Unsupported Media Type ;)"
 
 
 if __name__ == '__main__':

@@ -9,6 +9,16 @@ from itertools import islice
 import pickle
 import numpy as np
 from feature import *
+import matplotlib.pyplot as plt
+import os
+from datetime import datetime
+
+DEBUG = False
+ESA_SCORES = []
+SVM_SCORES = []
+RELEVANCES = []
+
+GENERAL_SCORE = []
 
 ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
@@ -59,7 +69,7 @@ class Learning:
             pass
 
     @staticmethod
-    def prediction(cos, user, article):
+    def prediction(cos, user, article, alpha = 0.5, beta = 0.5, z_norm=True):
         feature = {}
 
         normalized_article_ressort = ressort_mapping(article[2])
@@ -69,7 +79,8 @@ class Learning:
 
         feature.update(normalized_ressort_dict_article)
         #page prior feature
-        feature.update(normalize_pages(article[3]))
+        page = article[3]
+        feature.update(normalize_pages(page))
         #prior-infos about user
         feature.update(user_information_vector(user))
         #user-spezific comparison of interests with text and title
@@ -122,32 +133,71 @@ class Learning:
             print("Unexpected error:", sys.exc_info()[0])
             raise
             value = 0.0
-        if cos == 0.0 and value != 0.0:
-            return value
-        elif cos != 0.0 and value == 0.0:
-            return cos
+
+        relevance = 1 / float(page)         #inverse of the page
+        esa_score = cos
+        svm_score = value
+
+        if z_norm:
+            #normalize the scores
+            normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)
+            normalized_esa_score = z_normalization(esa_score, mean = 0.0009855744806407337, var = 7.961933559635215e-05)
+            normalized_svm_score = z_normalization(svm_score, mean = 0.5833671193911723, var = 0.05558054791068003)
+
+            score = (1 - alpha - beta) * normalized_relevance + alpha * normalized_esa_score + beta * normalized_svm_score
         else:
-            (value+cos)/2
+            score = (1 - alpha - beta) * relevance + alpha * esa_score + beta * svm_score
+
+        return score, normalized_relevance, normalized_esa_score, normalized_svm_score
+
+        # if cos == 0.0 and value != 0.0:             #cos refers to the esa-value and value refers to the svm-prediction_probability
+        #     return value
+        # elif cos != 0.0 and value == 0.0:
+        #     return cos
+        # else:
+        #     (value+cos)/2
 
 
     @staticmethod
     def global_learn():
+        print("Starting global_learn")
         #Learning.database.deleteuserinterestvector()
         userids = Learning.database.getuserids()
+        #if DEBUG:
+         #   articleids = Learning.database.getarticleidsfordate(datetime.strptime("09052016", "%d%m%Y"))
+        #else:
         articleids = Learning.database.getarticleidsfordate(Learning.date)
 
-        user_informations = {}
-        for id in userids:
-            user_informations[id] = Learning.database.getuserinformations(id) #die userinformations die von der DB kommen sind eine Liste
-            user_informations[id].append(Learning.database.getuserinterests(id)) #die interessen sind als dict gespeichert
-
         article_informations = {}
+        if DEBUG: print("list_article_ids = {} for date {}".format(articleids,Learning.date))
+
         for id in articleids:
             article_informations[id] = Learning.database.getarticleinformations(id)
 
-
+        user_informations = {}
         for userid in userids:
-            print('learning for '+str(userid))
+            print("Learning for User {}".format(userid))
+            user_informations[userid] = Learning.database.getuserinformations(userid) #die userinformations die von der DB kommen sind eine Liste
+            user_informations[userid].append(Learning.database.getuserinterests(userid)) #die interessen sind als dict gespeichert
+
+            results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid], article_informations)
+            for articleid in results:
+                score = results[articleid]
+                try:
+                    if score > 0.000001:
+                        # print("L\tInserting {}:{}:{} into DB...".format(userid,articleid,score))
+                        Learning.database.add_personalization_all_userarticle(userid, articleid, score)
+                except:
+                    pass
+                    #happens only if none value is given.
+        # analyze_score_distribution(ESA_SCORES, "ESA_SCORES")
+        # analyze_score_distribution(SVM_SCORES, "SVM_SCORES")
+        # analyze_score_distribution(RELEVANCES, "RELEVANCES")
+        # analyze_score_distribution(GENERAL_SCORE, "GENERAL")
+
+
+        # for userid in userids:
+        #     print('learning for '+str(userid))
             # results = Learning.learn({}, articleids, userid, ONLY_PERSONS, user_informations[userid],article_informations)
             # for articleid in results:
             #     score = results[articleid]
@@ -160,15 +210,6 @@ class Learning:
             #     if score > 0.0:
             #         Learning.database.add_personalization_without_person_userarticle(userid, articleid, score)
 
-            results = Learning.learn({}, articleids, userid, ALL_ARTICLES, user_informations[userid],article_informations)
-            for articleid in results:
-                score = results[articleid]
-                try:
-                    if score > 0.000001:
-                        Learning.database.add_personalization_all_userarticle(userid, articleid, score)
-                except:
-                    pass
-                    #happens only if none value is given.
 
 
     @staticmethod
@@ -203,23 +244,23 @@ class Learning:
     # extend to person ID, load from database such things like age etc
     @staticmethod
     def learn(interests, list_article_ids, userid, mode, user, articles):
-        interest_vector_user = Learning.database.getuserinterestvector(userid, mode)
+        interest_vector_user = Learning.database.getuserinterestvector(userid, mode)        #get all interests for a user
         if len(interests)>0:
 
-            for i in interests:
+            for i in interests:     #iterate over interests
                 interest_input = ""
-                for term, tag in Learning._lemmatizer.lemmatize(i):
+                for term, tag in Learning._lemmatizer.lemmatize(i):     #concatenate interests
                     interest_input += " "+term
                 interest_input = interest_input.strip()
-                tmp_vector = Learning.database.getinterestvectorforterm(interest_input,mode)
-                if len(tmp_vector)==0:
-                    tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)
+                tmp_vector = Learning.database.getinterestvectorforterm(interest_input,mode)    #get presaved esa_vec for concatenated interests
+                if len(tmp_vector)==0:      #if no wikipediaarticles were saved for given interests
+                    tmp_vector = Learning.database.getarticlesfromwikipedia(mode, interest_input)   #get new esa_vec
                     for wikipediaid in tmp_vector:
-                        if wikipediaid in interest_vector_user:
+                        if wikipediaid in interest_vector_user:     #if wiki_id already in the interest_vector of the user
                             # in the moment only addition of the scores, maybe also try averaging of the scores
                             tmp = interest_vector_user[wikipediaid]
-                            interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*float(interests[i])
-                        else:
+                            interest_vector_user[wikipediaid] = tmp + tmp_vector[wikipediaid]*float(interests[i])     #add new score to the old score
+                        else:       #if wiki_id not in user_vector
                             if float(interests[i]) > 0.1:
                                 interest_vector_user[wikipediaid] = (tmp_vector[wikipediaid]+0.0)*float(interests[i])
                 else:
@@ -228,6 +269,7 @@ class Learning:
                             interest_vector_user[wikipediaid] = interest_vector_user[wikipediaid]*float(interests[i])
                         else:
                             interest_vector_user[wikipediaid] = tmp_vector[wikipediaid] * float(interests[i])
+
         sorted_interest_vector_user = sorted(interest_vector_user.items(), key=operator.itemgetter(1), reverse=True)
         reduced_sorted_interest_vector = list(islice(sorted_interest_vector_user, VECTOR_SIZE))
         reduced_sorted_interest_vector_hm = {}
@@ -248,6 +290,34 @@ class Learning:
 
             cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
-            predicted_value =  Learning.prediction(cos_similarity, user, articles[article_id])
+            predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user, articles[article_id])
             results[article_id] = predicted_value;
+            if DEBUG: print(predicted_value, relevance, esa_score, svm_score)
+            ESA_SCORES.append(esa_score)
+            SVM_SCORES.append(svm_score)
+            RELEVANCES.append(relevance)
+            GENERAL_SCORE.append(predicted_value)
+
+        # print(ESA_SCORES[0:100])
+        # print(SVM_SCORES[0:100])
+        # print(RELEVANCES[0:100])
+        # print(GENERAL_SCORE[0:100])
+        # quit()
         return results
+
+def analyze_score_distribution(arr, filename):
+    print("Plotting histogram for {}".format(filename))
+    if not "plots" in os.listdir("."):
+        os.mkdir("./" + "plots")
+    mean = np.mean(arr)
+    var = np.var(arr)
+    plt.clf()
+    plt.title("mean = {}, var = {}".format(mean,var))
+    plt.hist(arr, bins=50)
+    plt.savefig("plots/" + filename + ".png")
+   # print(arr)
+    #print("{}:\tMean = {}\tVar = {}".format(filename,np.mean(arr),np.var(arr)))
+
+def z_normalization(x, mean, var):
+    z = (x - mean) / var
+    return z
