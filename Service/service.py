@@ -66,6 +66,19 @@ datum = today.strftime("%d%m%Y")
 #    return decorated
 #@requires_auth
 
+#############THIS IS THE CURRENT EXAMPLE CONTAINING personalizationLevel
+# json:  {"age":"25",
+#         "educationlevel":"Hochschulabschluss",
+#         "interestratings":[{"culture":"4",
+#                             "economy":"4",
+#                             "interest_musics":[{"electro":"3","hiphop":"5","jazz":"2","metal":"4","other_music":"1","pop":"5","rock":"5"}],
+#                             "interest_sports":[{"basketball":"2","cycling":"4","golf":"3","handball":"1","others_sport":"3","riding":"5","soccer":"2","swimming":"5","tennis":"2","wintersport":"1"}],
+#                             "localnews":"4","politics":"3"}],
+#         "location":"Bielefeld",
+#         "name":"Sabrina ",
+#         "personalizationlevel":"medium",
+#         "sex":"Weiblich"}
+
 #curl http://localhost:5000/service/\?personid\='1'
 @service.route('/user', methods=['POST'])
 def update_user():
@@ -75,7 +88,7 @@ def update_user():
         try:
             person_id = 0
             database = Database(host, user, password, db)
-            if 'personid' in json_input:
+            if 'personid' in json_input:        #this seems to be used for updating
                 person_id = json_input['personid']
                 result = database.update_user(json_input,person_id)
                 if result == -1:
@@ -87,7 +100,7 @@ def update_user():
                     print("done with user update with id ",person_id)
                     learning.close()
                     sys.stdout.flush()
-            else:
+            else:       # if no personId is given in the json, a new user is created instead
                 person_id = database.add_user(json_input)
                 if person_id == -1:
                     database.close()
@@ -166,19 +179,20 @@ def get_article_data_for_id():
 
         try:
             date = json_input['datum']
+            #TODO: datumsformat abfangen
         except:
             date = datum
 
         try:
             number_articles = json_input['anzahl_artikel']
         except:
-            pass
+            number_articles = 500
 
         try:
             database = Database(host, user, password, db)
             results = {}
 
-            articleIds = database.getarticlesfordate(date)
+            articleIds = database.getarticlesfordate(date, number_articles)
 
             results['artikel'] = articleIds
 
@@ -198,9 +212,17 @@ def get_personalization_for_id():
         try:
             database = Database(host, user, password, db)
             personid = int(json_input['personid'])
+            try:
+                date = json_input['datum']
+                #TODO: datumsformat abfangen
+            except:
+                date = datum
+
             results = {}
 
-            result = database.getpersonalizedarticles_justids(personid)
+
+
+            result = database.getpersonalizedarticles_justids(personid,date)
             results['artikel'] = result
 
             database.close()

@@ -69,8 +69,16 @@ class Learning:
             pass
 
     @staticmethod
-    def prediction(cos, user, article, alpha = 0.5, beta = 0.5, z_norm=True):
+    def prediction(cos, user_informations, article, alpha = 0.25, beta = 0.25, z_norm=True):
         feature = {}
+
+        personalization_level = user_informations[8]
+        if personalization_level == 'low':
+            alpha = beta = 1.5
+        elif personalization_level == 'medium':
+            alpha = beta = 2.5
+        elif personalization_level == 'high':
+            alpha = beta = 3.5
 
         normalized_article_ressort = ressort_mapping(article[2])
 
@@ -82,15 +90,15 @@ class Learning:
         page = article[3]
         feature.update(normalize_pages(page))
         #prior-infos about user
-        feature.update(user_information_vector(user))
+        feature.update(user_information_vector(user_informations))
         #user-spezific comparison of interests with text and title
         user_interest_list = []
-        for interest_id in user[8].keys(): #erstelle Liste der User-Interessen für den Vergleich mit Text
-            user_interest_list.append(user[8][interest_id]['name'])
+        for interest_id in user_informations[9].keys(): #erstelle Liste der User-Interessen für den Vergleich mit Text
+            user_interest_list.append(user_informations[9][interest_id]['name'])
         feature.update(compare_string_to_interests(article[0] + " " + article[1], user_interest_list, mode='user_specific_titel_and_text'))
         #cross-feature with ressort and normalized page
         cf_age_ressort,cf_sex_ressort,cf_edu_ressort,cf_age_page,cf_sex_page,cf_edu_page\
-            = compute_cross_features(user[0],user[1],user[2],article[3],article[3])
+            = compute_cross_features(user_informations[0], user_informations[1], user_informations[2], article[3], article[3])
 
         feature.update(cf_age_ressort)
         feature.update(cf_sex_ressort)
@@ -102,7 +110,7 @@ class Learning:
 
 
 
-        normalized_ressort_dict_user = normalize_user_ressort_ratings_to_dict(user)
+        normalized_ressort_dict_user = normalize_user_ressort_ratings_to_dict(user_informations)
 
         ##User X findet Ressort Y gut und Artikel Z ist aus Ressort Y (5 binaere features)
         ressort_specific_dict = user_specific_ressort_ratings(normalized_ressort_dict_user, normalized_article_ressort)
@@ -140,7 +148,7 @@ class Learning:
 
         if z_norm:
             #normalize the scores
-            normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)
+            normalized_relevance = z_normalization(relevance, mean = 0.16947266884534248, var = 0.07322013147086222)            #these values were precomputed
             normalized_esa_score = z_normalization(esa_score, mean = 0.0009855744806407337, var = 7.961933559635215e-05)
             normalized_svm_score = z_normalization(svm_score, mean = 0.5833671193911723, var = 0.05558054791068003)
 
@@ -149,13 +157,6 @@ class Learning:
             score = (1 - alpha - beta) * relevance + alpha * esa_score + beta * svm_score
 
         return score, normalized_relevance, normalized_esa_score, normalized_svm_score
-
-        # if cos == 0.0 and value != 0.0:             #cos refers to the esa-value and value refers to the svm-prediction_probability
-        #     return value
-        # elif cos != 0.0 and value == 0.0:
-        #     return cos
-        # else:
-        #     (value+cos)/2
 
 
     @staticmethod
@@ -234,16 +235,9 @@ class Learning:
             Learning.database.add_personalization_all_userarticle(userid, articleid, score)
 
 
-
-    #@staticmethod
-    #def relearn(interests, userid):
-    #    list_article_ids = Learning.database.getarticleidswithoutdate()
-    #    Learning.learn(interests, list_article_ids, userid, ALL_ARTICLES, )
-
-
     # extend to person ID, load from database such things like age etc
     @staticmethod
-    def learn(interests, list_article_ids, userid, mode, user, articles):
+    def learn(interests, list_article_ids, userid, mode, user_informations, articles):
         interest_vector_user = Learning.database.getuserinterestvector(userid, mode)        #get all interests for a user
         if len(interests)>0:
 
@@ -290,13 +284,13 @@ class Learning:
 
             cos_similarity = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
             #cos = calculatesimilarity(reduced_sorted_interest_vector_hm, reduced_sorted_article_vector_hm)
-            predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user, articles[article_id])
+            predicted_value, relevance, esa_score, svm_score =  Learning.prediction(cos_similarity, user_informations, articles[article_id])
             results[article_id] = predicted_value;
             if DEBUG: print(predicted_value, relevance, esa_score, svm_score)
-            ESA_SCORES.append(esa_score)
-            SVM_SCORES.append(svm_score)
-            RELEVANCES.append(relevance)
-            GENERAL_SCORE.append(predicted_value)
+            # ESA_SCORES.append(esa_score)
+            # SVM_SCORES.append(svm_score)
+            # RELEVANCES.append(relevance)
+            # GENERAL_SCORE.append(predicted_value)
 
         # print(ESA_SCORES[0:100])
         # print(SVM_SCORES[0:100])

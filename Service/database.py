@@ -22,7 +22,8 @@ class Database:
 
     def __init__(self, host, user, password, db):
         # print("Connecting to Database...")
-        Database.connection = pymysql.connect(host=host,
+        Database.connection = pymysql.connect(
+                             host=host,
                              user=user,
                              password=password,
                              db=db,
@@ -280,13 +281,14 @@ class Database:
         return results
 
     @staticmethod
-    def getpersonalizedarticles_justids(personId, number_articles=500):
+    def getpersonalizedarticles_justids(personId, date):
         results = {}
+        print(date)
         try:
             with Database.connection.cursor() as cursor:
-                sql = 'SELECT articleid, score FROM personalisierung_alle, artikel WHERE userid=%s ' \
-                      'and artikel.id=articleid ORDER BY score DESC LIMIT %s;'              #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
-                cursor.execute(sql,(personId, number_articles))
+                sql = 'SELECT articleid, score FROM personalisierung_alle, artikel WHERE userid=%s AND datum= %s ' \
+                      'and artikel.id=articleid ORDER BY score DESC;'              #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
+                cursor.execute(sql,(personId, date))
                 for row in cursor:
                     tmp_hm = {}
                     tmp_hm['articleid'] = row.get('articleid')
@@ -299,7 +301,7 @@ class Database:
 
     @staticmethod
     def getarticlesfordate(date,number_articles=500):
-        print(date, number_articles)
+        print(date)
         results = {}
         try:
             with Database.connection.cursor() as cursor:
@@ -764,19 +766,20 @@ class Database:
     @staticmethod
     def getuserinformations(userid):
         informations = []
-        sql = 'SELECT age, geschlecht, abschluss, interessen_kultur, interessen_lokales, interessen_lokalsport, interessen_politik, interessen_sport FROM nutzer where id=%s;'
+        sql = 'SELECT age, geschlecht, abschluss, personalisierungs_level, interessen_kultur, interessen_lokales, interessen_lokalsport, interessen_politik, interessen_sport FROM nutzer where id=%s;'
         try:
             with Database.connection.cursor() as cursor:
                 cursor.execute(sql,userid)
                 for row in cursor:
-                    informations.append(row.get('age'))
-                    informations.append(row.get('geschlecht'))
-                    informations.append(row.get('abschluss'))
-                    informations.append(row.get('interessen_kultur'))
-                    informations.append(row.get('interessen_lokales'))
-                    informations.append(row.get('interessen_lokalsport'))
-                    informations.append(row.get('interessen_politik'))
-                    informations.append(row.get('interessen_sport'))
+                    informations.append(row.get('age'))     #0
+                    informations.append(row.get('geschlecht')) #1
+                    informations.append(row.get('abschluss'))   #2
+                    informations.append(row.get('interessen_kultur')) #3
+                    informations.append(row.get('interessen_lokales')) #4
+                    informations.append(row.get('interessen_lokalsport')) #5
+                    informations.append(row.get('interessen_politik')) #6
+                    informations.append(row.get('interessen_sport')) #7
+                    informations.append(row.get('personalisierungs_level')) #8
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
@@ -870,6 +873,9 @@ class Database:
             else:
                 pass
 
+            # "personalizationlevel":"medium",
+            personalization_level = json_input['personalizationlevel']
+
             interest_rating = json_input['interestratings'] # this is a list in in the list is a dictionary....
             interest_rating = interest_rating[0]
 
@@ -910,10 +916,10 @@ class Database:
             try:
 
                 with Database.connection.cursor() as cursor:
-                    sql = "INSERT INTO nutzer (id,age,geschlecht,abschluss,interessen_kultur,interessen_lokales," \
+                    sql = "INSERT INTO nutzer (id,age,geschlecht,personalisierungs_level,abschluss,interessen_kultur,interessen_lokales," \
                           "interessen_lokalsport,interessen_politik,interessen_sport,interessanteste_rubrik,plz) " \
-                          "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-                    cursor.execute(sql, (person_id,json_input['age'],geschlecht,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0"))
+                          "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+                    cursor.execute(sql, (person_id,json_input['age'],geschlecht,personalization_level,abschluss,"3",interessen_lokales,"3",interessen_politik,interessen_sport,"none","0"))
                     Database.connection.commit()
 
                 for interesse in interessen_vector:
