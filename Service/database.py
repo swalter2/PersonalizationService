@@ -305,13 +305,14 @@ class Database:
         results = {}
         try:
             with Database.connection.cursor() as cursor:
-                sql = 'SELECT id, titel, text FROM artikel WHERE datum= %s LIMIT %s;'          #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
+                sql = 'SELECT id, titel, text, seite FROM artikel WHERE datum= %s LIMIT %s;'          #LIMIT in this SQL-Query sets the amount of articles that are returned. Could be turned into a function parameter
                 cursor.execute(sql,(date,number_articles))
                 for row in cursor:
                     tmp_hm = {}
                     tmp_hm['id'] = row.get('id')
                     tmp_hm['titel'] = row.get('titel')
                     tmp_hm['text'] = row.get('text')
+                    tmp_hm['seite'] = row.get('seite')
                     results[row.get('id')] = tmp_hm
         except:
             print("Unexpected error:", sys.exc_info()[0])

@@ -11,16 +11,18 @@ ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
 
-# host = 'localhost'
-# user = 'wikipedia_new'
-# password = '1234567'
-# db = 'wikipedia_new'
-
 host = 'localhost'
-user = 'root'
-password = 'root'
-db = 'nw_esa'
+user = 'wikipedia_new'
+password = '1234567'
+db = 'wikipedia_new'
 
+
+# ######FOR LOCAL TESTING#######
+# host = 'localhost'
+# user = 'root'
+# password = 'root'
+# db = 'nw_esa'
+# ##############################
 
 
 today = datetime.datetime.now()
@@ -171,7 +173,7 @@ def get_articles_for_id():
     else:
         return "415 Unsupported Media Type ;)"
 
-#get all articles (ids, title, text) for a given date
+#get all articles (ids, title, text, page) for a given date
 @service.route('/serviceArticles', methods=['POST'])
 def get_article_data_for_id():
     if request.headers['Content-Type'] == 'application/json':
@@ -192,9 +194,9 @@ def get_article_data_for_id():
             database = Database(host, user, password, db)
             results = {}
 
-            articleIds = database.getarticlesfordate(date, number_articles)
+            article_data = database.getarticlesfordate(date, number_articles)
 
-            results['artikel'] = articleIds
+            results['artikel'] = article_data
 
             database.close()
             return jsonify(results)
@@ -219,8 +221,6 @@ def get_personalization_for_id():
                 date = datum
 
             results = {}
-
-
 
             result = database.getpersonalizedarticles_justids(personid,date)
             results['artikel'] = result
