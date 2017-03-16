@@ -4,6 +4,7 @@ from database import Database
 from learning import Learning
 import sys
 import datetime
+import re
 
 service = Flask(__name__)
 
@@ -16,7 +17,7 @@ user = 'wikipedia_new'
 password = '1234567'
 db = 'wikipedia_new'
 
-
+#
 # ######FOR LOCAL TESTING#######
 # host = 'localhost'
 # user = 'root'
@@ -29,10 +30,14 @@ today = datetime.datetime.now()
 datum = today.strftime("%d%m%Y")
 
 
-# die aktuelle URL
+# /service
 # curl -X POST --data "{\"personid\":\"116\"}"  http://kognihome.sebastianwalter.org/service --header "Content-type:application/json"
 #
-
+# /serviceArticles
+# curl -X POST --data "{\"datum\":\"12032017\"}"  http://kognihome.sebastianwalter.org/serviceArticles --header "Content-type:application/json"
+#
+# /servicePersonalization
+# curl -X POST --data "{\"personid\":\"116\"}"  http://kognihome.sebastianwalter.org/servicePersonalization --header "Content-type:application/json"
 
 #json-{"age":" 25","educationlevel":" Hochschulabschluss",
 # "interestratings":[{"culture":"3",
@@ -180,22 +185,25 @@ def get_article_data_for_id():
         json_input = request.json
 
         try:
-            date = json_input['datum']
-            #TODO: datumsformat abfangen
-        except:
-            date = datum
-
-        try:
-            number_articles = json_input['anzahl_artikel']
-        except:
-            number_articles = 500
-
-        try:
             database = Database(host, user, password, db)
+
+            try:
+                date = json_input['datum']
+            except:
+                date = datum
+
+            if not check_date_format(date):
+                return "416 Wrong Date Format: {}. Should be DDMMYYYY in correct ranges.".format(date)
+            if not database.checkfordateindb(date):
+                return "417 No Issue of the Neue Westfaelische for this Date ({})".format(date)
+
+            try:
+                number_articles = json_input['anzahl_artikel']
+            except:
+                number_articles = 500
+
             results = {}
-
             article_data = database.getarticlesfordate(date, number_articles)
-
             results['artikel'] = article_data
 
             database.close()
@@ -216,9 +224,13 @@ def get_personalization_for_id():
             personid = int(json_input['personid'])
             try:
                 date = json_input['datum']
-                #TODO: datumsformat abfangen
             except:
                 date = datum
+
+            if not check_date_format(date):
+                return "416 Wrong Date Format: {}. Should be DDMMYYYY in correct ranges.".format(date)
+            if not database.checkfordateindb(date):
+                return "417 No Issue of the Neue Westfaelische for this Date ({})".format(date)
 
             results = {}
 
@@ -236,3 +248,11 @@ def get_personalization_for_id():
 
 if __name__ == '__main__':
     service.run(debug=False)
+
+def check_date_format(date_str):
+    match = re.search('([0-2][0-9]|[3][0-1]){1}([0][0-9]|[1][0-2]){1}(\d){4}$', date_str)
+    if match:
+        print(match.group(0))
+        return True
+    else:
+        return False

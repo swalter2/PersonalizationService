@@ -374,6 +374,22 @@ class Database:
             raise
         return results
 
+    @staticmethod
+    def checkfordateindb(date):
+        dates = set()
+        try:
+            with Database.connection.cursor() as cursor:
+                sql = "Select distinct datum from artikel;"
+                cursor.execute(sql)
+                for row in cursor:
+                    dates.add(row.get('datum'))
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
+        if date in dates:
+            return True
+        else:
+            return False
 
     @staticmethod
     def checkanddeletearticleexceptdate(date):
