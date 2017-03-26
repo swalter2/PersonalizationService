@@ -386,10 +386,12 @@ class Database:
         except:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-        if date in dates:
-            return True
+
+        current_date_in_db = dates.pop()
+        if date == current_date_in_db:
+            return True, current_date_in_db
         else:
-            return False
+            return False, current_date_in_db
 
     @staticmethod
     def checkanddeletearticleexceptdate(date):

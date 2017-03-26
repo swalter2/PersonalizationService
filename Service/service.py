@@ -17,7 +17,7 @@ user = 'wikipedia_new'
 password = '1234567'
 db = 'wikipedia_new'
 
-#
+
 # ######FOR LOCAL TESTING#######
 # host = 'localhost'
 # user = 'root'
@@ -192,15 +192,24 @@ def get_article_data_for_id():
             except:
                 date = datum
 
+
             if not check_date_format(date):
                 return "416 Wrong Date Format: {}. Should be DDMMYYYY in correct ranges.".format(date)
-            if not database.checkfordateindb(date):
-                return "417 No Issue of the Neue Westfaelische for this Date ({})".format(date)
+
+
+
+            date_in_db, current_db_date = database.checkfordateindb(date)
+            if not date_in_db:
+                return "417 No Issue of the Neue Westfaelische for the requested Date ({}). Currently available is the issue for the date {}.".format(date, current_db_date)
+
+
 
             try:
                 number_articles = json_input['anzahl_artikel']
             except:
                 number_articles = 500
+
+
 
             results = {}
             article_data = database.getarticlesfordate(date, number_articles)
@@ -229,8 +238,10 @@ def get_personalization_for_id():
 
             if not check_date_format(date):
                 return "416 Wrong Date Format: {}. Should be DDMMYYYY in correct ranges.".format(date)
-            if not database.checkfordateindb(date):
-                return "417 No Issue of the Neue Westfaelische for this Date ({})".format(date)
+
+            date_in_db, current_db_date = database.checkfordateindb(date)
+            if not date_in_db:
+                return "417 No Issue of the Neue Westfaelische for the requested Date ({}). Currently available is the issue for the date {}.".format(date, current_db_date)
 
             results = {}
 
@@ -252,7 +263,7 @@ if __name__ == '__main__':
 def check_date_format(date_str):
     match = re.search('([0-2][0-9]|[3][0-1]){1}([0][0-9]|[1][0-2]){1}(\d){4}$', date_str)
     if match:
-        print(match.group(0))
+        print("Found a date with correct format in json input: {}".format(match.group(0)))
         return True
     else:
         return False
