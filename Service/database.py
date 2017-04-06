@@ -28,8 +28,8 @@ class Database:
                              password=password,
                              db=db,
                              charset='utf8mb4',
-                             port=8889,     # comment this and the next line before pushing
-                             unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",
+                             # port=8889,     # comment this and the next line before pushing
+                             # unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",
                              cursorclass=pymysql.cursors.DictCursor)
 
         Database._lemmatizer = PatternParserLemmatizer()
@@ -867,11 +867,17 @@ class Database:
         interests_with_scores = Database.getuserinterests(personid)
         return Database.event.get_events_ids_scores(interests_with_scores)
 
-
+    @staticmethod
+    def getallrecipes():
+        return Database.rezept.get_all_recipes()
 
     @staticmethod
     def getpersonalizedrecipes(personid):
         return Database.rezept.get_rezept()
+
+    @staticmethod
+    def getpersonalizedrecipes_justscores(personid):
+        return Database.rezept.get_personalized_recipes(personid)
 
     @staticmethod
     def add_user(json_input, person_id = ''):

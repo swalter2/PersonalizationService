@@ -10,6 +10,19 @@ class Rezept:
     def get_rezept(self):
         return self.rezepte[random.randint(0, 2)]
 
+    def get_personalized_recipes(self, personid):
+        d = {}
+        for recipe_id in list(self.rezepte):
+            d['rezept_id_' + str(recipe_id)] = {'score': random.uniform(0,1), 'rezeptid':('rezept_id_' + str(recipe_id))}
+        return d
+
+    def get_all_recipes(self):
+        # just for keeping the id format as used for events
+        d = {}
+        for recipe_id in list(self.rezepte):
+            d['rezept_id_' + str(recipe_id)] = self.rezepte[recipe_id]
+        return d
+
     def create_rezept_0(self):
         rezept = {}
         rezept['titel'] = 'Chilisuppe'
