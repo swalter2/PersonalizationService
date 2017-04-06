@@ -28,8 +28,8 @@ class Database:
                              password=password,
                              db=db,
                              charset='utf8mb4',
-                             # port=8889,     # comment this and the next line before pushing
-                             # unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",
+                             port=8889,     # comment this and the next line before pushing
+                             unix_socket="/Applications/MAMP/tmp/mysql/mysql.sock",
                              cursorclass=pymysql.cursors.DictCursor)
 
         Database._lemmatizer = PatternParserLemmatizer()
@@ -857,6 +857,17 @@ class Database:
             if score >= 3:
                 interests.append(interest['name'])
         return Database.event.get_events(interests)
+
+    @staticmethod
+    def getraweventdata():
+        return Database.event.get_raw_events()
+
+    @staticmethod
+    def getpersonalizedevents_justscores(personid):
+        interests_with_scores = Database.getuserinterests(personid)
+        return Database.event.get_events_ids_scores(interests_with_scores)
+
+
 
     @staticmethod
     def getpersonalizedrecipes(personid):

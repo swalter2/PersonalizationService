@@ -12,18 +12,18 @@ ONLY_PERSONS = 0
 WITHOUT_PERSONS = 1
 ALL_ARTICLES = 2
 
-host = 'localhost'
-user = 'wikipedia_new'
-password = '1234567'
-db = 'wikipedia_new'
-
-
-# ######FOR LOCAL TESTING#######
 # host = 'localhost'
-# user = 'root'
-# password = 'root'
-# db = 'nw_esa'
-# ##############################
+# user = 'wikipedia_new'
+# password = '1234567'
+# db = 'wikipedia_new'
+
+
+######FOR LOCAL TESTING#######
+host = 'localhost'
+user = 'root'
+password = 'root'
+db = 'nw_esa'
+##############################
 
 
 today = datetime.datetime.now()
@@ -212,8 +212,17 @@ def get_article_data_for_id():
 
 
             results = {}
+
+            print("Retrieving article data...")
+
             article_data = database.getarticlesfordate(date, number_articles)
             results['artikel'] = article_data
+
+            print("Retrieving event data...")
+
+            event_data = database.getraweventdata()
+            results['events'] = event_data
+
 
             database.close()
             return jsonify(results)
@@ -245,8 +254,11 @@ def get_personalization_for_id():
 
             results = {}
 
-            result = database.getpersonalizedarticles_justids(personid,date)
-            results['artikel'] = result
+            article_results = database.getpersonalizedarticles_justids(personid,date)
+            results['artikel'] = article_results
+
+            event_results = database.getpersonalizedevents_justscores(personid)
+            results['events'] = event_results
 
             database.close()
             return jsonify(results)

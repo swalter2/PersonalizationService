@@ -103,6 +103,30 @@ class Event:
                     hm['event_id_'+eventid] = self.event_dict[eventid]
         return hm
 
+    def get_raw_events(self):
+        d = {}
+        for eventid in list(self.event_dict):
+            d['event_id_' + eventid] = self.event_dict[eventid]
+        return d
+
+    def get_events_ids_scores(self, interests_with_scores):
+        """
+        :param interests_with_scores: dict with {id: {'score':<score>, 'id':<id>, 'name':<name>},...}
+        :return:
+        """
+        d = {}
+
+        for interest_id in interests_with_scores:
+            interest = interests_with_scores[interest_id]['name']
+            score = interests_with_scores[interest_id]['score']
+            stemmed_interest = self.stemmer.stem(interest.lower())
+            if stemmed_interest in list(self.inverted_index):
+                for eventid in self.inverted_index[stemmed_interest]:
+                    d['event_id_'+eventid] = {'score': (score / 5), 'eventid': ('event_id_'+eventid)}
+
+        return d
+
+
     def __init__(self):
         today = datetime.datetime.now()
         datum = today.strftime("%d%m%Y")
