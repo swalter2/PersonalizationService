@@ -24,13 +24,12 @@ datum = today.strftime("%d%m%Y")
 #datum = '21032016'
 
 ausgaben = []
-ausgaben.append("NWBTW")
 ausgaben.append("NWHS")
 ausgaben.append("NWBTS")
 ausgaben.append("NWTO")
 ausgaben.append("NWBTW")
 ausgaben.append("NWBTD")
-ausgaben.append("NWHW-")
+ausgaben.append("NWHW")
 ausgaben.append("NWPK")
 ausgaben.append("NWBTO")
 ausgaben.append("NWHKZ")
