@@ -69,14 +69,6 @@ for ausgabe in ausgaben:
     database.checkanddeletearticleexceptdate(datum)
     print('cleaned database from old articles')
 
-
-    print('start global learning')
-    learning = Learning(host, user, password, db, datum)
-    learning.global_learn()
-    print('done global learning')
-    learning.close()
-
-
     for the_file in os.listdir(filename.replace('.zip','')):
         file_path = os.path.join(filename.replace('.zip',''), the_file)
         try:
@@ -88,6 +80,13 @@ for ausgabe in ausgaben:
     os.remove(filename)
     os.rmdir(filename.replace('.zip',''))
     print("Done with "+ausgabe)
+
+print('start global learning')
+learning = Learning(host, user, password, db, datum)
+learning.global_learn()
+print('done global learning')
+learning.close()
+
 #initialize and load new NW-Events
 event = Event()
 
