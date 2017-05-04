@@ -233,7 +233,7 @@ class Database:
                             Database.connection.commit()
                     except:
                         print("Unexpected error:", sys.exc_info()[0])
-                        raise
+                        #raise
 
                 for wikipediaid in article.vector_personen:
                     try:
@@ -243,7 +243,7 @@ class Database:
                             Database.connection.commit()
                     except:
                         print("Unexpected error:", sys.exc_info()[0])
-                        raise
+                        #raise
 
                 for wikipediaid in article.vector_ohne_personen:
                     try:
@@ -253,11 +253,11 @@ class Database:
                             Database.connection.commit()
                     except:
                         print("Unexpected error:", sys.exc_info()[0])
-                        raise
+                        #raise
 
         except:
             print("Unexpected error:", sys.exc_info()[0])
-            raise
+            #raise
 
 
     @staticmethod
