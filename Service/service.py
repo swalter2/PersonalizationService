@@ -226,6 +226,7 @@ def get_article_data_for_id():
             print("Retrieving recipe data...")
 
             recipe_data = database.getallrecipes()
+            if recipe_data: print("Found {} Recipes".format(len(recipe_data)))
             results['rezepte'] = recipe_data
 
             database.close()
@@ -265,6 +266,7 @@ def get_personalization_for_id():
             results['events'] = event_results
 
             recipe_results = database.getpersonalizedrecipes_justscores(personid)
+            if recipe_results: print("Found {} Scores for Recipes".format(len(recipe_results)))
             results['rezepte'] = recipe_results
 
             database.close()
