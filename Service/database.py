@@ -291,7 +291,7 @@ class Database:
                 cursor.execute(sql,(personId, date))
                 for row in cursor:
                     tmp_hm = {}
-                    tmp_hm['articleid'] = row.get('articleid')
+                    tmp_hm['id'] = row.get('articleid')
                     tmp_hm['score'] = row.get('score')
                     results[row.get('articleid')] = tmp_hm
         except:

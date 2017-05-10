@@ -106,6 +106,7 @@ class Event:
     def get_raw_events(self):
         d = {}
         for eventid in list(self.event_dict):
+            self.event_dict[eventid]['id'] = 'event_id_' + eventid
             d['event_id_' + eventid] = self.event_dict[eventid]
         return d
 
@@ -122,7 +123,7 @@ class Event:
             stemmed_interest = self.stemmer.stem(interest.lower())
             if stemmed_interest in list(self.inverted_index):
                 for eventid in self.inverted_index[stemmed_interest]:
-                    d['event_id_'+eventid] = {'score': (score / 5), 'eventid': ('event_id_'+eventid)}
+                    d['event_id_'+eventid] = {'score': (score / 5), 'id': ('event_id_'+eventid)}
 
         return d
 

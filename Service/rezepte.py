@@ -13,13 +13,14 @@ class Rezept:
     def get_personalized_recipes(self, personid):
         d = {}
         for recipe_id in list(self.rezepte):
-            d['rezept_id_' + str(recipe_id)] = {'score': random.uniform(0,1), 'rezeptid':('rezept_id_' + str(recipe_id))}
+            d['rezept_id_' + str(recipe_id)] = {'score': random.uniform(0,1), 'id':('rezept_id_' + str(recipe_id))}
         return d
 
     def get_all_recipes(self):
         # just for keeping the id format as used for events
         d = {}
         for recipe_id in list(self.rezepte):
+            self.rezepte[recipe_id]['id'] = 'rezept_id_' + str(recipe_id)   #store the recipe id in the data as well
             d['rezept_id_' + str(recipe_id)] = self.rezepte[recipe_id]
         return d
 
